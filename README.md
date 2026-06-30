@@ -92,4 +92,13 @@ Two clearly-marked "coming soon" affordances in the app point at the production 
 
 ---
 
+## A note on data & affiliation
+
+HENRY is an **independent project**, not affiliated with or endorsed by Amazon. Its knowledge —
+playbooks, the Q&A catalog, and the assistant's answers — is built entirely from **Amazon's
+publicly published seller and vendor documentation**, gathered via Claude + web search. It uses
+**no confidential, internal, or proprietary data**. Sample/demo figures throughout are illustrative.
+
+---
+
 Built by [stephiesworld](https://github.com/stephiesworld). Pricing via Keepa; answers via Claude + web search.

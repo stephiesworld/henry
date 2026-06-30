@@ -1464,6 +1464,9 @@ td.title {
     padding-top: 0;
     flex-shrink: 0;
   }
+  .side-disclaimer {
+    display: none;
+  }
   .content {
     padding: 22px 18px 60px;
   }
@@ -1732,6 +1735,17 @@ td.title {
 }
 .landing-footer .muted {
   font-size: 13px;
+}
+.footer-disclaimer {
+  max-width: 460px;
+  text-align: right;
+  line-height: 1.5;
+}
+.side-disclaimer {
+  margin: 10px 2px 0;
+  font-size: 10px;
+  line-height: 1.45;
+  color: var(--text-faint);
 }
 @media (max-width: 600px) {
   .hero-title {

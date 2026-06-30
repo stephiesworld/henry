@@ -161,7 +161,11 @@ export default function Landing() {
             <span className="h">HENRY</span>
           </span>
         </div>
-        <span className="muted">Prototype · pricing via Keepa, answers via Claude + web search.</span>
+        <span className="muted footer-disclaimer">
+          An independent prototype. Built from Amazon&apos;s publicly published seller &amp; vendor
+          documentation using Claude + web search — not affiliated with or endorsed by Amazon, and
+          using no confidential or internal data.
+        </span>
       </footer>
     </div>
   );

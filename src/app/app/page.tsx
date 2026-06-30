@@ -135,6 +135,10 @@ export default function AppPage() {
             <span className="dot" />
             {livePricing ? "Live pricing" : "Demo pricing"}
           </span>
+          <p className="side-disclaimer">
+            Independent project · built from Amazon&apos;s public seller docs via Claude + web search.
+            Not affiliated with Amazon.
+          </p>
         </div>
       </aside>
 
