@@ -1,93 +1,95 @@
 # HENRY — your local fulfillment center
 
-A repository of Amazon knowledge to help 1P vendors and 3P sellers grow. Amazon
-publishes label specs, program rules, and policy updates constantly, but most
-vendors never read them. HENRY gathers, verifies, and explains it — like a
-Customer Success Manager, but digital.
+**A Vendor Central co-pilot for Amazon 1P vendors (and 3P sellers).**
+
+🔗 **Live demo: [henry-ten.vercel.app](https://henry-ten.vercel.app)** — runs on built-in demo data, so you can click straight in (no setup).
+
+Amazon publishes its rules, fee changes, label specs, and program updates constantly — but most vendors never read them, and Vendor Central hides the numbers that matter (true per-unit margin, why chargebacks are eating 3%+, why a SKU stopped getting ordered). HENRY gathers Amazon's guidance, checks it, runs the math, and hands it back in plain English. Like a Customer Success Manager, but digital.
+
+---
 
 ## What it does
 
-**ASIN Toolkit** — paste your ASINs and HENRY pulls, for each one:
+HENRY is organized around the vendor's real decision tree: **fix profitability while staying 1P → or move to 3P → or negotiate better terms.** Eight tools:
 
-- Who's currently winning the **buy box** (Amazon vs. a 3P seller)
-- Which ASINs have **no featured offer** (suppressed buy box)
-- **Lowest price in the last 30 / 60 days**
-- ASINs with a **price variance over ±5%** in the last 30 days
+| Tool | What it does |
+| --- | --- |
+| **ASIN Toolkit** | Paste your ASINs → buy-box winner, no-featured-offer flags, 30/60-day price lows, and ±5% variance alerts. CSV export. Data via Keepa (bring-your-own-key). |
+| **Profitability — net PPM by ASIN** | The number Vendor Central hides: true net profit per unit after co-op, freight, chargebacks, returns, and ads. Margin waterfall, "Fool's Gold" detection, a **what-if simulator**, and CSV import/export. |
+| **Chargeback forensics** | Upload a Vendor Central chargeback export → auto-classifies every deduction by root cause, flags patterns (recurring ASINs, weekday clusters), shows what's disputable, and **drafts the dispute letter**. |
+| **Weekly Brief** | A live, web-searched digest of the most recent Amazon Seller/Vendor Central updates — what changed, who it affects, what to do — with source links. Never recited from memory. |
+| **Vendor Q&A** | 120+ real 1P/3P questions organized by topic; tap any one and HENRY answers it for your account. |
+| **Playbooks** | A curated library of Amazon how-tos (cost-increase approval, CRAP status, net PPM, 1P-vs-3P, AVN prep, FNSKU labels, and more) that also ground the chat. |
+| **Generators** | AI tools for the writing-heavy tasks: a **cost-increase request builder** (COGS breakdown + likelihood-to-approve meter), 1P-vs-3P decision analyzer, chargeback dispute writer, and listing optimizer. |
+| **Ask an Amazonian** | An agentic chat (Claude + web search + vision) that answers anything, grounded in the playbooks and checked against current guidance. Upload a label photo and it flags what's missing. |
 
-**Ask an Amazonian** — a chat that answers anything a seller needs:
+---
 
-- _"What's the latest FNSKU label requirement?"_
-- _"How do I enroll an ASIN in Subscribe & Save?"_
-- _"How do I get Climate Pledge Friendly certified?"_
-- _"How do I file a chargeback dispute successfully?"_
-- _"When is Prime Day this year?"_
-- **Scan a label** — upload a photo and HENRY flags what's missing.
+## Architecture & tech
 
-It runs on **Claude Opus 4.8** with **web search**, so date- and policy-sensitive
-answers are pulled from current published guidance rather than stale memory.
+- **Next.js (App Router) + TypeScript** — one codebase for the UI and the server-side API routes.
+- **Claude (Opus 4.8)** via the Anthropic API — powers the chat, weekly brief, and generators, with **tool use (web search)** and streaming responses. Server-side only, so keys are never exposed to the browser.
+- **Keepa API** — live buy-box / pricing for the ASIN toolkit (optional, bring-your-own-key).
+- **Vercel** — hosting + serverless functions.
+- **localStorage** — client-side persistence for saved lists, P&L, and uploads (no accounts yet — see roadmap).
 
-## Stack
+**Agentic vs. deterministic, on purpose:** the assistant and brief use Claude's agentic tool-calling (it decides to search, reads sources, and synthesizes across steps) — that's where open-ended reasoning adds value. The financial tools (net PPM, chargeback classification, CSV parsing) are deterministic code, because there you want correctness and repeatability, not an LLM guessing. The technique is matched to the problem.
 
-Next.js (App Router) + TypeScript. Pricing data via the **Keepa API**; the
-assistant via the **Anthropic API**. Both API keys are server-side only.
+---
 
-## Run it
+## Run it locally
 
 ```bash
 npm install
 cp .env.local.example .env.local   # optional — see below
-npm run dev
+npm run dev                         # http://localhost:3000
 ```
 
-Open http://localhost:3000.
+It runs in **demo mode** with no keys (realistic generated data + a canned assistant). To go live, add to `.env.local`:
 
-### Keys (both optional for the demo)
+| Key | Powers | Get it from |
+| --- | --- | --- |
+| `ANTHROPIC_API_KEY` | Chat, weekly brief, generators, label scanning | [console.anthropic.com](https://console.anthropic.com) |
+| `KEEPA_API_KEY` | Live buy-box / pricing in the ASIN toolkit | [keepa.com/#!api](https://keepa.com/#!api) |
 
-HENRY runs out of the box in **demo mode**: the ASIN tools show realistic
-generated data and the chat returns a canned intro. Add keys to go live:
+See [DEPLOY.md](DEPLOY.md) for deploying to Vercel.
 
-| Key                | Powers                          | Get it from                          |
-| ------------------ | ------------------------------- | ------------------------------------ |
-| `KEEPA_API_KEY`    | ASIN tools (buy box / pricing)  | https://keepa.com/#!api (paid)       |
-| `KEEPA_DOMAIN`     | marketplace (1 = .com, default) | —                                    |
-| `ANTHROPIC_API_KEY`| Ask Henry chat + label scanning | https://console.anthropic.com        |
+---
 
-Put them in `.env.local` and restart `npm run dev`.
-
-## How the metrics are defined
-
-- **Buy box winner** — the current featured-offer seller. Amazon's own retail
-  seller IDs map to "Amazon"; everything else is shown as a 3P seller.
-- **No featured offer** — the buy box is currently suppressed (no winning offer).
-- **30 / 60-day low** — the lowest buy-box price observed in that window.
-- **30-day variance** — `(max − min) / min × 100` over the last 30 days; flagged
-  when it exceeds ±5%.
-
-Keepa returns prices in cents and timestamps in "Keepa minutes"; `src/lib/keepa.ts`
-handles the conversion and falls back to the NEW / Amazon price series when a
-buy-box history isn't available.
-
-## Project layout
+## Project structure
 
 ```
 src/
   app/
-    page.tsx              # tabbed shell (Toolkit / Ask)
-    api/asins/route.ts    # POST → analyze ASINs
-    api/chat/route.ts     # POST → streaming chat (Claude + web search)
-  components/
-    AsinTools.tsx         # ASIN table, filters, summary chips
-    AskHenry.tsx          # streaming chat + label upload
+    page.tsx              # marketing landing page
+    app/page.tsx          # the app shell (sidebar + tools)
+    api/
+      asins/route.ts      # ASIN analysis (Keepa + demo fallback)
+      chat/route.ts       # streaming chat (Claude + web search)
+      generate/route.ts   # brief / generators (Claude, streaming)
+  components/              # one component per tool
   lib/
-    keepa.ts              # Keepa client + demo-data fallback
-    types.ts
+    keepa.ts              # Keepa client + demo data
+    knowledge.ts          # curated playbooks
+    questions.ts          # the vendor Q&A catalog
+    profitability.ts      # net-PPM math
+    chargebacks.ts        # chargeback classification engine
 ```
 
-## Notes & next steps
+---
 
-- Seller **names** for 3P buy-box winners need Keepa's seller endpoint (extra
-  tokens); the toolkit shows the seller ID today.
-- For a production 1P integration, swap Keepa for the Amazon **SP-API** (needs
-  Seller/Vendor Central credentials + app approval).
-- Good follow-ons: saved ASIN lists, scheduled buy-box alerts, CSV export, and a
-  curated knowledge base the chat can cite from.
+## Scope & roadmap (honest)
+
+This is a working **prototype**, built solo. What's real vs. not:
+
+- ✅ **Live:** the chat, weekly brief, and generators (Claude + web search).
+- 🟡 **Demo / entered data:** the financial tools run on sample data or numbers you enter/upload — not yet a live Vendor Central feed.
+
+Two clearly-marked "coming soon" affordances in the app point at the production vision:
+
+- **Connect Vendor Central** — a real version would sync POs, sales, net PPM, and deductions automatically via Amazon's **SP-API** (chargebacks would stay CSV, since Amazon doesn't expose them well via API).
+- **Accounts** — saved data across devices would move from localStorage to per-user storage (e.g. Supabase auth + Postgres).
+
+---
+
+Built by [stephiesworld](https://github.com/stephiesworld). Pricing via Keepa; answers via Claude + web search.
