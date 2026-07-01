@@ -33,15 +33,27 @@ You have a curated PLAYBOOK LIBRARY (below). When a relevant playbook is provide
 
 const PLAYBOOK_INDEX = PLAYBOOKS.map((p) => `- ${p.title} (${p.category})`).join("\n");
 
-function buildSystem(latestUserText: string): string {
+// The persona + playbook index never change, so they're a stable, cacheable
+// prefix (first block, marked with cache_control). The per-query retrieved
+// playbooks DO change every turn, so they go in a second, unmarked block that
+// sits after the cache breakpoint — varying it never invalidates the cached
+// prefix. Below the model's min-prefix size the marker silently no-ops (safe).
+const STABLE_SYSTEM = `${SYSTEM_PROMPT}\n\n=== PLAYBOOK LIBRARY (titles) ===\n${PLAYBOOK_INDEX}`;
+
+function buildSystem(latestUserText: string): Anthropic.TextBlockParam[] {
   const relevant = retrievePlaybooks(latestUserText, 3);
-  let s = `${SYSTEM_PROMPT}\n\n=== PLAYBOOK LIBRARY (titles) ===\n${PLAYBOOK_INDEX}`;
+  const blocks: Anthropic.TextBlockParam[] = [
+    { type: "text", text: STABLE_SYSTEM, cache_control: { type: "ephemeral" } },
+  ];
   if (relevant.length) {
-    s +=
-      `\n\n=== RELEVANT PLAYBOOKS (prefer these; confirm specifics via web search) ===\n` +
-      relevant.map((p) => `## ${p.title}\n${p.body}`).join("\n\n");
+    blocks.push({
+      type: "text",
+      text:
+        `=== RELEVANT PLAYBOOKS (prefer these; confirm specifics via web search) ===\n` +
+        relevant.map((p) => `## ${p.title}\n${p.body}`).join("\n\n"),
+    });
   }
-  return s;
+  return blocks;
 }
 
 interface ClientMessage {

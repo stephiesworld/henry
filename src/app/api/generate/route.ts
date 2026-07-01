@@ -232,7 +232,9 @@ export async function POST(req: NextRequest) {
             max_tokens: 4096,
             thinking: { type: "adaptive" },
             ...(effort ? { output_config: { effort } } : {}),
-            system,
+            // Cache the system prompt so repeated generations reuse it (~90% cheaper
+            // on the cached portion) instead of reprocessing it each call.
+            system: [{ type: "text", text: system, cache_control: { type: "ephemeral" } }],
             ...(useWebSearch
               ? {
                   tools: [
