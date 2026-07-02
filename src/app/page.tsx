@@ -97,7 +97,7 @@ export default function Landing() {
     <div className="landing">
       <nav className="landing-nav">
         <div className="landing-nav-inner">
-          <div className="brand">
+          <div className="brand" title="HENRY — Helpful Expert, Navigating Retail Yield">
             <Logo />
             <span className="brand-word">
               <span className="h">HENRY</span>
@@ -216,12 +216,15 @@ export default function Landing() {
       </section>
 
       <footer className="landing-footer">
-        <div className="brand">
+        <div className="brand" title="HENRY — Helpful Expert, Navigating Retail Yield">
           <Logo size={26} />
           <span className="brand-word">
             <span className="h">HENRY</span>
           </span>
         </div>
+        <span className="footer-backronym">
+          <b>H</b>elpful <b>E</b>xpert, <b>N</b>avigating <b>R</b>etail <b>Y</b>ield
+        </span>
         <span className="muted footer-disclaimer">
           An independent prototype. Built from Amazon&apos;s publicly published seller &amp; vendor
           documentation using Claude + web search — not affiliated with or endorsed by Amazon, and

@@ -1859,3 +1859,15 @@ td.title {
   .pv-stats { grid-template-columns: repeat(2, 1fr); }
   .pv-panel .wf-row { grid-template-columns: 104px 1fr 64px; font-size: 12px; gap: 10px; }
 }
+
+/* ---- Landing: HENRY backronym touch ---- */
+.brand[title] { cursor: help; }
+.footer-backronym {
+  font-size: 12px;
+  color: var(--text-faint);
+  letter-spacing: 0.02em;
+}
+.footer-backronym b {
+  color: var(--accent);
+  font-weight: 600;
+}
