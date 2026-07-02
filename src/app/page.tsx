@@ -31,7 +31,7 @@ const FEATURES = [
   {
     Icon: IconNews,
     title: "Weekly brief & playbooks",
-    body: "A live digest of the Amazon updates vendors never read — plus a curated library of how-tos: FNSKU labels, Subscribe & Save, Climate Pledge, ungating, chargeback disputes, and more.",
+    body: "A live digest of the Amazon updates that are easy to miss — plus a curated library of how-tos: FNSKU labels, Subscribe & Save, Climate Pledge, ungating, chargeback disputes, and more.",
   },
   {
     Icon: IconMessage2,
@@ -43,8 +43,54 @@ const FEATURES = [
 const STEPS = [
   { n: "1", t: "Bring your catalog", d: "Paste your ASINs — no integration or login required to start." },
   { n: "2", t: "See what's wrong", d: "HENRY surfaces buy-box losses, suppressed offers, and price risk at a glance." },
-  { n: "3", t: "Ask & act", d: "Get plain-English, account-specific guidance to fix it — like having a CSM on call." },
+  { n: "3", t: "Ask & act", d: "Get plain-English, account-specific guidance to fix it, grounded in Amazon's published rules." },
 ];
+
+// A faithful, static render of the Profitability tab's margin waterfall — reuses the
+// real .waterfall / .wf-* classes so the preview matches the actual product exactly.
+// Numbers are the built-in sample portfolio (clearly tagged), not real customer data.
+const WATERFALL = [
+  { label: "Wholesale price", kind: "in", val: "$24.00", w: 100 },
+  { label: "COGS", kind: "out", val: "−$9.50", w: 40 },
+  { label: "Co-op / allowances", kind: "out", val: "−$3.60", w: 15 },
+  { label: "Freight / inbound", kind: "out", val: "−$1.80", w: 8 },
+  { label: "Chargebacks", kind: "out", val: "−$1.20", w: 5 },
+  { label: "Returns / damages", kind: "out", val: "−$0.90", w: 4 },
+  { label: "Advertising", kind: "out", val: "−$2.40", w: 10 },
+  { label: "Net PPM", kind: "net", val: "$4.60", w: 19 },
+];
+
+function ProductPreview() {
+  return (
+    <div className="pv-panel" aria-hidden>
+      <div className="pv-head">
+        <div className="pv-dots"><span /><span /><span /></div>
+        <span className="pv-title">Profitability — net PPM by ASIN</span>
+        <span className="pv-tag">sample portfolio</span>
+      </div>
+      <div className="pv-body">
+        <div className="pv-stats">
+          <div className="pv-stat"><span className="pv-stat-lbl">Monthly revenue</span><span className="pv-stat-val">$184,600</span></div>
+          <div className="pv-stat"><span className="pv-stat-lbl">Net contribution</span><span className="pv-stat-val">$35,400</span></div>
+          <div className="pv-stat"><span className="pv-stat-lbl">Blended margin</span><span className="pv-stat-val pv-teal">19.2%</span></div>
+          <div className="pv-stat"><span className="pv-stat-lbl">Losing SKUs</span><span className="pv-stat-val pv-red">3</span></div>
+        </div>
+        <div className="pv-wf-head">32oz Insulated Bottle — margin waterfall</div>
+        <div className="waterfall">
+          {WATERFALL.map((r) => (
+            <div key={r.label} className="wf-row">
+              <div className="wf-label">{r.label}</div>
+              <div className="wf-track">
+                <div className={`wf-fill wf-${r.kind}`} style={{ width: `${r.w}%` }} />
+              </div>
+              <div className={`wf-val ${r.kind === "out" ? "wf-neg" : ""}`}>{r.val}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
 
 export default function Landing() {
   return (
@@ -66,13 +112,13 @@ export default function Landing() {
       <section className="hero">
         <span className="eyebrow">Built for Amazon 1P vendors (and 3P sellers)</span>
         <h1 className="hero-title">
-          The Vendor Central <span className="h">co-pilot</span> Amazon never gave you.
+          Vendor Central <span className="h">analytics and answers</span>, in one place.
         </h1>
         <p className="hero-sub">
           Cost increases that get auto-rejected, surprise chargebacks, CRAP-status SKUs, the 1P-vs-3P
-          question — Vendor Central is brutal and the answers are buried. HENRY gathers Amazon&apos;s
-          guidance, checks it, and hands it back in plain English. Track your buy box and pricing, and
-          ask an Amazonian anything. Like a CSM, but digital.
+          question — Vendor Central is unforgiving and the answers are buried. HENRY gathers
+          Amazon&apos;s published guidance, checks it against live sources, and hands it back in plain
+          English. Track your buy box and pricing, and ask an Amazonian anything.
         </p>
         <div className="hero-cta">
           <Link href="/app" className="btn-lg primary-lg">
@@ -86,11 +132,24 @@ export default function Landing() {
         <p className="hero-note">No login or API key needed to explore — runs on built-in demo data.</p>
       </section>
 
+      <section className="preview-band">
+        <div className="preview-cap">
+          <span className="eyebrow">See it in action</span>
+          <h2>Every SKU&apos;s true net margin — after co-op, chargebacks, and ads.</h2>
+          <p>
+            HENRY breaks down net PPM per ASIN — the contribution Vendor Central&apos;s reports
+            don&apos;t hand you directly — so you can see which SKUs actually make money.
+          </p>
+        </div>
+        <ProductPreview />
+      </section>
+
       <section className="problem">
         <p>
-          &ldquo;Amazon told us the label spec changed&hellip; in a notification we never opened.&rdquo;
-          1P vendors lose margin to chargebacks, suppressed buy boxes, and missed program deadlines —
-          not because the answers don&apos;t exist, but because they&apos;re buried. HENRY surfaces them.
+          Amazon publishes label specs, fee changes, and program deadlines constantly — across
+          notifications and help pages that are easy to miss. 1P vendors lose margin to chargebacks,
+          suppressed buy boxes, and missed deadlines. The answers exist; they&apos;re just buried.
+          HENRY surfaces them.
         </p>
       </section>
 
@@ -107,9 +166,11 @@ export default function Landing() {
       </section>
 
       <section className="ask-section">
-        <h2>What you can ask HENRY</h2>
+        <h2>The questions vendors email in &mdash; answered instantly</h2>
         <p className="ask-sub">
-          {TOTAL_QUESTIONS}+ real vendor questions, answered for your account — here&apos;s a taste.
+          These are the real questions 1P vendors send their Amazon vendor manager and wait days to
+          hear back on. HENRY answers {TOTAL_QUESTIONS}+ of them on the spot, grounded in
+          Amazon&apos;s published guidance.
         </p>
         <div className="ask-grid">
           {ASK_PREVIEW.map((c) => (
@@ -146,7 +207,7 @@ export default function Landing() {
 
       <section className="cta-band">
         <h2>
-          Stop reading Amazon&apos;s fine print. <span className="h">Ask HENRY instead.</span>
+          Vendor Central answers, <span className="h">without the digging.</span>
         </h2>
         <Link href="/app" className="btn-lg primary-lg">
           Launch HENRY
