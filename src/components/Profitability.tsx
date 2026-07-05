@@ -2,19 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Papa from "papaparse";
-import {
-  IconReportMoney,
-  IconCoin,
-  IconPercentage,
-  IconAlertTriangle,
-  IconDownload,
-  IconUpload,
-  IconPlus,
-  IconTrash,
-  IconX,
-  IconFileText,
-  IconPlugConnected,
-} from "@tabler/icons-react";
+import { IconReportMoney, IconTrash, IconX, IconFileText } from "@tabler/icons-react";
 import {
   computePortfolio,
   computeRow,
@@ -133,11 +121,11 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Workspace / 02</p>
         <div className="head-row">
           <h1>Profitability — net PPM by ASIN</h1>
           {onConnect && (
             <button className="connect-btn" onClick={onConnect}>
-              <IconPlugConnected size={15} stroke={1.8} />
               Connect Vendor Central
               <span className="soon-tag">soon</span>
             </button>
@@ -164,11 +152,9 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
                 Load sample portfolio
               </button>
               <button className="ghost" onClick={() => fileRef.current?.click()}>
-                <IconUpload size={15} stroke={2} />
                 Upload CSV
               </button>
               <button className="ghost" onClick={addRow}>
-                <IconPlus size={15} stroke={2} />
                 Add a SKU
               </button>
             </div>
@@ -179,19 +165,19 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
         <>
           <div className="statgrid">
             <div className="statcard">
-              <div className="lbl"><IconCoin size={14} stroke={1.8} />Monthly revenue</div>
+              <div className="lbl">Monthly revenue</div>
               <div className="num">{usd(portfolio.totalRevenue)}</div>
             </div>
             <div className={`statcard ${portfolio.totalContribution < 0 ? "bad" : "teal"}`}>
-              <div className="lbl"><IconReportMoney size={14} stroke={1.8} />Net contribution</div>
+              <div className="lbl">Net contribution</div>
               <div className="num">{usd(portfolio.totalContribution)}</div>
             </div>
             <div className={`statcard ${portfolio.blendedMarginPct < benchmark ? "warn" : "teal"}`}>
-              <div className="lbl"><IconPercentage size={14} stroke={1.8} />Blended margin</div>
+              <div className="lbl">Blended margin</div>
               <div className="num">{portfolio.blendedMarginPct.toFixed(1)}%</div>
             </div>
             <div className={`statcard ${portfolio.lossCount > 0 ? "bad" : ""}`}>
-              <div className="lbl"><IconAlertTriangle size={14} stroke={1.8} />Losing SKUs</div>
+              <div className="lbl">Thin or losing SKUs</div>
               <div className="num">{portfolio.lossCount}</div>
             </div>
           </div>
@@ -219,7 +205,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
 
           {portfolio.foolsGoldCount > 0 && (
             <div className="cb-flag" style={{ marginTop: 14 }}>
-              <IconAlertTriangle size={16} stroke={2} />
+              <span className="cb-flag-mark">!</span>
               {portfolio.foolsGoldCount} &ldquo;Fool&apos;s Gold&rdquo; ASIN{portfolio.foolsGoldCount > 1 ? "s" : ""} — high
               revenue but margin under 5%. High volume is hiding thin profit; these are the ones to
               re-price, re-SKU, or move to 3P.
@@ -227,10 +213,10 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           )}
 
           <div className="row" style={{ margin: "18px 0 0" }}>
-            <button className="ghost" onClick={addRow}><IconPlus size={15} stroke={2} />Add SKU</button>
-            <button className="ghost" onClick={() => fileRef.current?.click()}><IconUpload size={15} stroke={2} />Upload CSV</button>
+            <button className="ghost" onClick={addRow}>Add SKU</button>
+            <button className="ghost" onClick={() => fileRef.current?.click()}>Upload CSV</button>
             <div className="spacer" />
-            <button className="ghost" onClick={exportCsv}><IconDownload size={15} stroke={2} />Export</button>
+            <button className="ghost" onClick={exportCsv}>Export</button>
           </div>
           {importNote && <div className="muted" style={{ fontSize: 12.5, marginTop: 8 }}>{importNote}</div>}
 
@@ -338,7 +324,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
 
               <div className="row" style={{ marginTop: 16 }}>
                 <button
-                  className="ghost"
+                  className="accent-ghost"
                   onClick={() => onAsk(`My ASIN ${selected.asin || selected.title} has a net PPM of $${selBase.netPPM.toFixed(2)} (${selBase.marginPct.toFixed(1)}% margin) on 1P after co-op, chargebacks, and ads. How do I improve its profitability — and should it stay on 1P or move to 3P?`)}
                 >
                   Ask HENRY how to fix this SKU

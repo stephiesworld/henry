@@ -1,7 +1,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { IconSparkles, IconCopy, IconCheck } from "@tabler/icons-react";
+import { IconCopy, IconCheck } from "@tabler/icons-react";
 import Markdown from "./Markdown";
 import { streamPost } from "@/lib/clientStream";
 
@@ -210,11 +210,10 @@ export default function CostIncreaseBuilder({ onAsk }: { onAsk: (q: string) => v
 
       <div className="row" style={{ marginTop: 16 }}>
         <button className="primary" onClick={draft} disabled={drafting || wholesale <= 0}>
-          <IconSparkles size={15} stroke={2} />
           {drafting ? "Drafting…" : "Draft the request with HENRY"}
         </button>
         <button
-          className="ghost"
+          className="accent-ghost"
           onClick={() => onAsk(`I need to raise my wholesale cost on ${product || "an ASIN"} by ${calc.askPct.toFixed(1)}% because landed COGS rose from $${calc.currentCOGS.toFixed(2)} to $${calc.newCOGS.toFixed(2)}. How do I get Amazon to approve it?`)}
         >
           Ask HENRY for strategy

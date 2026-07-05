@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { IconRefresh, IconNews, IconBook2 } from "@tabler/icons-react";
+import { IconNews } from "@tabler/icons-react";
 import Markdown from "./Markdown";
 import { streamPost } from "@/lib/clientStream";
 
@@ -35,6 +35,7 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Knowledge / 01</p>
         <h1>HENRY&apos;s weekly brief</h1>
         <p>
           The Amazon Seller &amp; Vendor Central updates you didn&apos;t read — gathered, checked, and
@@ -44,7 +45,6 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
       </div>
 
       <button className="primary" onClick={run} disabled={loading}>
-        <IconRefresh size={16} stroke={2} />
         {loading ? "Gathering updates…" : ran ? "Refresh brief" : "Generate this week's brief"}
       </button>
 
@@ -75,7 +75,6 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
           </p>
           {onBrowsePlaybooks && (
             <button className="ghost" style={{ marginTop: 14 }} onClick={onBrowsePlaybooks}>
-              <IconBook2 size={15} stroke={2} />
               Browse Playbooks
             </button>
           )}

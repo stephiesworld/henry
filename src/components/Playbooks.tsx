@@ -56,7 +56,7 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
           All playbooks
         </button>
         <div className="detail-meta">
-          <span className="tag amazon">{open.category}</span>
+          <span className="pb-cat">{open.category}</span>
           <span className="pill">{open.audience === "Both" ? "1P + 3P" : open.audience}</span>
         </div>
         <div className="page-head" style={{ marginTop: 12, marginBottom: 8 }}>
@@ -81,6 +81,7 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Knowledge / 03</p>
         <h1>Playbooks</h1>
         <p>
           HENRY&apos;s curated library of Amazon how-tos for 1P &amp; 3P sellers — the stuff Amazon
@@ -91,7 +92,8 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
 
       <input
         type="text"
-        placeholder="Search playbooks (labels, SNS, climate pledge, ungating…)"
+        className="search-input"
+        placeholder="Search playbooks — labels, SNS, climate pledge, ungating…"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
@@ -108,10 +110,8 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
         {filtered.map((p) => (
           <div key={p.id} className="feature-tile" onClick={() => setOpen(p)}>
             <div className="tile-top">
-              <span className="tag amazon">{p.category}</span>
-              <span className="muted" style={{ fontSize: 11 }}>
-                {p.audience === "Both" ? "1P + 3P" : p.audience}
-              </span>
+              <span className="pb-cat">{p.category}</span>
+              <span className="tile-audience">{p.audience === "Both" ? "1P + 3P" : p.audience}</span>
             </div>
             <h3>{p.title}</h3>
             <p>{p.summary}</p>

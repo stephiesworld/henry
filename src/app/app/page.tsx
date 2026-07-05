@@ -2,18 +2,6 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import {
-  IconListSearch,
-  IconNews,
-  IconBook2,
-  IconWand,
-  IconMessage2,
-  IconHelpCircle,
-  IconReceiptTax,
-  IconReportMoney,
-  IconSparkles,
-  IconUserCircle,
-} from "@tabler/icons-react";
 import AsinTools from "@/components/AsinTools";
 import AskHenry from "@/components/AskHenry";
 import Playbooks from "@/components/Playbooks";
@@ -27,27 +15,26 @@ import ComingSoonModal, { type PreviewKind } from "@/components/ComingSoonModal"
 
 type Tab = "tools" | "profit" | "chargebacks" | "brief" | "qa" | "playbooks" | "generators" | "ask";
 
-const NAV: { id: Tab; label: string; Icon: typeof IconListSearch }[] = [
-  { id: "tools", label: "ASIN toolkit", Icon: IconListSearch },
-  { id: "profit", label: "Profitability", Icon: IconReportMoney },
-  { id: "chargebacks", label: "Chargebacks", Icon: IconReceiptTax },
-  { id: "brief", label: "Weekly brief", Icon: IconNews },
-  { id: "qa", label: "Vendor Q&A", Icon: IconHelpCircle },
-  { id: "playbooks", label: "Playbooks", Icon: IconBook2 },
-  { id: "generators", label: "Generators", Icon: IconWand },
-  { id: "ask", label: "Ask an Amazonian", Icon: IconMessage2 },
+const NAV_GROUPS: { label: string; items: { id: Tab; label: string }[] }[] = [
+  {
+    label: "Workspace",
+    items: [
+      { id: "tools", label: "ASIN toolkit" },
+      { id: "profit", label: "Profitability" },
+      { id: "chargebacks", label: "Chargebacks" },
+    ],
+  },
+  {
+    label: "Knowledge",
+    items: [
+      { id: "brief", label: "Weekly brief" },
+      { id: "qa", label: "Vendor Q&A" },
+      { id: "playbooks", label: "Playbooks" },
+    ],
+  },
+  { label: "Drafting", items: [{ id: "generators", label: "Generators" }] },
+  { label: "Chat", items: [{ id: "ask", label: "Ask an Amazonian" }] },
 ];
-
-function Logo() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 40 40" fill="none" aria-hidden>
-      <rect x="3" y="3" width="34" height="34" rx="9" fill="rgba(255,153,0,0.14)" />
-      <path d="M11 15l9-4 9 4v10l-9 4-9-4V15z" stroke="#ff9900" strokeWidth="1.8" fill="none" />
-      <path d="M11 15l9 4 9-4M20 19v10" stroke="#ff9900" strokeWidth="1.8" />
-      <path d="M13 31c4 2.4 10 2.4 14 0" stroke="#ff9900" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 export default function AppPage() {
   const [tab, setTab] = useState<Tab>("tools");
@@ -102,33 +89,42 @@ export default function AppPage() {
     <div className="app-shell">
       <aside className="sidebar">
         <Link href="/" className="side-brand" aria-label="HENRY home">
-          <Logo />
           <span className="side-brand-text">
             <span className="h">HENRY</span>
-            <span className="side-tag">fulfillment center</span>
+            <span className="side-tag">your local fulfillment center</span>
           </span>
         </Link>
 
         <nav className="side-nav">
-          {NAV.map(({ id, label, Icon }) => (
-            <button
-              key={id}
-              className={`nav-item ${tab === id ? "active" : ""}`}
-              onClick={() => setTab(id)}
-            >
-              <Icon size={18} stroke={1.8} />
-              {label}
-            </button>
-          ))}
+          {(() => {
+            let idx = 0;
+            return NAV_GROUPS.map((group) => (
+              <div key={group.label} className="nav-group">
+                <p className="nav-group-label">{group.label}</p>
+                {group.items.map(({ id, label }) => {
+                  idx += 1;
+                  const num = String(idx).padStart(2, "0");
+                  return (
+                    <button
+                      key={id}
+                      className={`nav-item ${tab === id ? "active" : ""}`}
+                      onClick={() => setTab(id)}
+                    >
+                      <span className="nav-num">{num}</span>
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            ));
+          })()}
         </nav>
 
         <div className="side-foot">
           <button className="side-signin" onClick={() => setPreview("accounts")}>
-            <IconUserCircle size={16} stroke={1.8} />
             Sign in / save
           </button>
           <button className="start-here" onClick={() => setShowWelcome(true)}>
-            <IconSparkles size={15} stroke={1.8} />
             Start here
           </button>
           <span className={`status-chip ${livePricing ? "live" : "demo"}`}>
@@ -136,8 +132,8 @@ export default function AppPage() {
             {livePricing ? "Live pricing" : "Demo pricing"}
           </span>
           <p className="side-disclaimer">
-            Independent project · built from Amazon&apos;s public seller docs via Claude + web search.
-            Not affiliated with Amazon.
+            Independent project, built from Amazon&apos;s public seller docs. Not affiliated with
+            Amazon.
           </p>
         </div>
       </aside>

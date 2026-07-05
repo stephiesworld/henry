@@ -2,19 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Papa from "papaparse";
-import {
-  IconUpload,
-  IconFileText,
-  IconAlertTriangle,
-  IconScale,
-  IconCopy,
-  IconCheck,
-  IconDownload,
-  IconRefresh,
-  IconChevronDown,
-  IconSparkles,
-  IconPlugConnected,
-} from "@tabler/icons-react";
+import { IconUpload, IconCopy, IconCheck, IconChevronDown } from "@tabler/icons-react";
 import {
   mapRows,
   analyze,
@@ -123,11 +111,11 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Workspace / 03</p>
         <div className="head-row">
           <h1>Chargeback forensics</h1>
           {onConnect && (
             <button className="connect-btn" onClick={onConnect}>
-              <IconPlugConnected size={15} stroke={1.8} />
               Connect Vendor Central
               <span className="soon-tag">soon</span>
             </button>
@@ -150,7 +138,6 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
           <input ref={fileRef} type="file" accept=".csv,text/csv" style={{ display: "none" }} onChange={onFile} />
           <div className="row" style={{ marginTop: 14, justifyContent: "center" }}>
             <button className="ghost" onClick={() => ingest(SAMPLE_CSV)}>
-              <IconFileText size={15} stroke={2} />
               Load sample report
             </button>
           </div>
@@ -172,29 +159,29 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
               />
             </label>
             <div className="spacer" />
-            <button className="ghost" onClick={exportCsv}><IconDownload size={15} stroke={2} />Export</button>
-            <button className="ghost" onClick={reset}><IconRefresh size={15} stroke={2} />New report</button>
+            <button className="ghost" onClick={exportCsv}>Export</button>
+            <button className="ghost" onClick={reset}>New report</button>
           </div>
 
           {warning && <div className="err" style={{ color: "var(--yellow)" }}>{warning}</div>}
 
           <div className="statgrid">
             <div className="statcard">
-              <div className="lbl"><IconScale size={14} stroke={1.8} />Chargebacks</div>
+              <div className="lbl">Chargebacks</div>
               <div className="num">{analysis.count}</div>
             </div>
             <div className="statcard bad">
-              <div className="lbl"><IconAlertTriangle size={14} stroke={1.8} />Total leaked</div>
+              <div className="lbl">Total leaked</div>
               <div className="num">{money(analysis.totalAmount)}</div>
             </div>
             {pctOfInvoice !== null && (
               <div className={`statcard ${pctOfInvoice >= 3 ? "bad" : "teal"}`}>
-                <div className="lbl"><IconAlertTriangle size={14} stroke={1.8} />% of invoice</div>
+                <div className="lbl">% of invoice</div>
                 <div className="num">{pctOfInvoice.toFixed(1)}%</div>
               </div>
             )}
             <div className="statcard teal">
-              <div className="lbl"><IconScale size={14} stroke={1.8} />Disputable</div>
+              <div className="lbl">Disputable</div>
               <div className="num">{money(analysis.disputableAmount)}</div>
             </div>
           </div>
@@ -217,7 +204,7 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
               <h3 className="cb-h">Red-flag patterns</h3>
               <div className="cb-flags">
                 {analysis.redFlags.map((f, i) => (
-                  <div key={i} className="cb-flag"><IconAlertTriangle size={16} stroke={2} />{f.text}</div>
+                  <div key={i} className="cb-flag"><span className="cb-flag-mark">!</span>{f.text}</div>
                 ))}
               </div>
             </>
@@ -302,11 +289,10 @@ function ChargebackRow({ cb, onAsk }: { cb: Chargeback; onAsk: (q: string) => vo
               </ul>
               <div className="row">
                 <button className="primary" onClick={draft} disabled={drafting}>
-                  <IconSparkles size={15} stroke={2} />
                   {drafting ? "Drafting…" : "Draft dispute letter with HENRY"}
                 </button>
                 <button
-                  className="ghost"
+                  className="accent-ghost"
                   onClick={() => onAsk(`I got a "${info.label}" chargeback (${cb.reasonRaw}) on PO ${cb.orderId || "—"} for $${cb.amount}. How do I prevent this going forward?`)}
                 >
                   Ask HENRY how to prevent it
@@ -316,7 +302,7 @@ function ChargebackRow({ cb, onAsk }: { cb: Chargeback; onAsk: (q: string) => vo
           ) : (
             <div className="row">
               <button
-                className="ghost"
+                className="accent-ghost"
                 onClick={() => onAsk(`I got this Amazon chargeback: "${cb.reasonRaw}" for $${cb.amount}. What is it and what should I do?`)}
               >
                 Ask HENRY about this

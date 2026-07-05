@@ -1,15 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import {
-  IconArrowLeft,
-  IconScale,
-  IconPencil,
-  IconReportMoney,
-  IconGitBranch,
-  IconCopy,
-  IconCheck,
-} from "@tabler/icons-react";
+import { IconArrowLeft, IconCopy, IconCheck } from "@tabler/icons-react";
 import Markdown from "./Markdown";
 import { streamPost } from "@/lib/clientStream";
 import CostIncreaseBuilder from "./CostIncreaseBuilder";
@@ -104,11 +96,11 @@ const META: Record<GenTask, { title: string; lead: string; cta: string }> = {
   },
 };
 
-const TILES: { task: GenTask; Icon: typeof IconScale; audience: string; title: string; body: string }[] = [
-  { task: "cost-increase", Icon: IconReportMoney, audience: "1P", title: "Cost-increase request writer", body: "Draft a wholesale cost-increase justification built to survive Amazon's auto-rejection." },
-  { task: "decision", Icon: IconGitBranch, audience: "1P + 3P", title: "1P vs 3P decision analyzer", body: "Get a recommendation on whether a product belongs on Vendor Central, Seller Central, or both." },
-  { task: "chargeback", Icon: IconScale, audience: "1P", title: "Chargeback dispute writer", body: "Enter the chargeback details and HENRY drafts a ready-to-submit dispute + evidence checklist." },
-  { task: "optimize", Icon: IconPencil, audience: "1P + 3P", title: "Listing optimizer", body: "Generate an optimized title, bullets, A+ angles, and backend keywords from your product." },
+const TILES: { task: GenTask; num: string; audience: string; title: string; body: string }[] = [
+  { task: "cost-increase", num: "01", audience: "1P", title: "Cost-increase request writer", body: "Draft a wholesale cost-increase justification built to survive Amazon's auto-rejection." },
+  { task: "decision", num: "02", audience: "1P + 3P", title: "1P vs 3P decision analyzer", body: "Get a recommendation on whether a product belongs on Vendor Central, Seller Central, or both." },
+  { task: "chargeback", num: "03", audience: "1P", title: "Chargeback dispute writer", body: "Enter the chargeback details and HENRY drafts a ready-to-submit dispute + evidence checklist." },
+  { task: "optimize", num: "04", audience: "1P + 3P", title: "Listing optimizer", body: "Generate an optimized title, bullets, A+ angles, and backend keywords from your product." },
 ];
 
 function GenTool({ task }: { task: GenTask }) {
@@ -192,18 +184,19 @@ export default function Generators({ onAsk }: { onAsk: (q: string) => void }) {
     return (
       <div>
         <div className="page-head">
+          <p className="eyebrow">Drafting / 01</p>
           <h1>Generators</h1>
           <p>
             Put HENRY to work on the writing-heavy vendor tasks — cost-increase requests, 1P-vs-3P
             decisions, chargeback disputes, and listing optimization.
           </p>
         </div>
-        <div className="card-grid">
+        <div className="card-grid two">
           {TILES.map((t) => (
             <div key={t.task} className="feature-tile" onClick={() => setView(t.task)}>
               <div className="tile-top">
-                <span className="tile-icon"><t.Icon size={22} stroke={1.8} /></span>
-                <span className="muted" style={{ fontSize: 11 }}>{t.audience}</span>
+                <span className="tile-num">{t.num}</span>
+                <span className="pill">{t.audience}</span>
               </div>
               <h3>{t.title}</h3>
               <p>{t.body}</p>

@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { IconPaperclip, IconSend } from "@tabler/icons-react";
 
 interface Msg {
   role: "user" | "assistant";
@@ -130,6 +129,7 @@ export default function AskHenry({ seed }: { seed?: { text: string; nonce: numbe
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Chat</p>
         <h1>Ask an Amazonian</h1>
         <p>
           Label rules, program enrollment (SNS, Climate Pledge, Vine), category approvals, chargeback
@@ -171,7 +171,6 @@ export default function AskHenry({ seed }: { seed?: { text: string; nonce: numbe
 
           <div className="attach-row">
             <button className="ghost" onClick={() => fileRef.current?.click()} disabled={streaming}>
-              <IconPaperclip size={15} stroke={2} />
               Scan a label
             </button>
             <input
@@ -210,7 +209,7 @@ export default function AskHenry({ seed }: { seed?: { text: string; nonce: numbe
               onClick={() => send()}
               disabled={streaming || (!input.trim() && !pending)}
             >
-              {streaming ? "…" : <><IconSend size={15} stroke={2} />Send</>}
+              {streaming ? "…" : "Send"}
             </button>
           </div>
         </div>

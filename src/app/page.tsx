@@ -1,236 +1,273 @@
 import Link from "next/link";
-import {
-  IconListSearch,
-  IconNews,
-  IconMessage2,
-  IconArrowRight,
-} from "@tabler/icons-react";
 import { QUESTION_CATEGORIES, TOTAL_QUESTIONS } from "@/lib/questions";
 
-const ASK_PREVIEW = QUESTION_CATEGORIES.filter((c) =>
-  ["cost-increases", "chargebacks", "model-strategy", "profitability", "inventory-po", "negotiation"].includes(c.id)
-);
-
-function Logo({ size = 32 }: { size?: number }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 40 40" fill="none" aria-hidden>
-      <rect x="3" y="3" width="34" height="34" rx="9" fill="rgba(255,153,0,0.14)" />
-      <path d="M11 15l9-4 9 4v10l-9 4-9-4V15z" stroke="#ff9900" strokeWidth="1.8" fill="none" />
-      <path d="M11 15l9 4 9-4M20 19v10" stroke="#ff9900" strokeWidth="1.8" />
-      <path d="M13 31c4 2.4 10 2.4 14 0" stroke="#ff9900" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
-const FEATURES = [
-  {
-    Icon: IconListSearch,
-    title: "ASIN toolkit",
-    body: "Paste your catalog and instantly see who's winning the buy box, which ASINs have no featured offer, the 30/60-day price lows, and anything swinging more than ±5%. Export to CSV.",
-  },
-  {
-    Icon: IconNews,
-    title: "Weekly brief & playbooks",
-    body: "A live digest of the Amazon updates that are easy to miss — plus a curated library of how-tos: FNSKU labels, Subscribe & Save, Climate Pledge, ungating, chargeback disputes, and more.",
-  },
-  {
-    Icon: IconMessage2,
-    title: "Ask an Amazonian",
-    body: "A chat that answers anything — grounded in the playbooks and checked against current published guidance via live web search. Even scan a label photo and HENRY flags what's missing.",
-  },
+// The "Answers" section shows six real question groups, drawn from the live
+// question catalog, in the order the design lays them out.
+const ANSWER_GROUP_IDS = [
+  "cost-increases",
+  "profitability",
+  "chargebacks",
+  "inventory-po",
+  "negotiation",
+  "model-strategy",
 ];
+const ANSWER_GROUPS = ANSWER_GROUP_IDS.map((id) =>
+  QUESTION_CATEGORIES.find((c) => c.id === id)
+).filter((c): c is (typeof QUESTION_CATEGORIES)[number] => Boolean(c));
 
-const STEPS = [
-  { n: "1", t: "Bring your catalog", d: "Paste your ASINs — no integration or login required to start." },
-  { n: "2", t: "See what's wrong", d: "HENRY surfaces buy-box losses, suppressed offers, and price risk at a glance." },
-  { n: "3", t: "Ask & act", d: "Get plain-English, account-specific guidance to fix it, grounded in Amazon's published rules." },
-];
-
-// A faithful, static render of the Profitability tab's margin waterfall — reuses the
-// real .waterfall / .wf-* classes so the preview matches the actual product exactly.
-// Numbers are the built-in sample portfolio (clearly tagged), not real customer data.
+// Static render of the Profitability tab's margin waterfall — the built-in
+// sample portfolio (clearly tagged), not real customer data.
+const INK = "rgba(241,238,230,0.85)";
+const DIM = "rgba(241,238,230,0.55)";
+const MONO = "rgba(241,238,230,0.7)";
+const RED = "#C4643F";
+const GREEN = "#8FBFA4";
+const WF_MAX = 24;
 const WATERFALL = [
-  { label: "Wholesale price", kind: "in", val: "$24.00", w: 100 },
-  { label: "COGS", kind: "out", val: "−$9.50", w: 40 },
-  { label: "Co-op / allowances", kind: "out", val: "−$3.60", w: 15 },
-  { label: "Freight / inbound", kind: "out", val: "−$1.80", w: 8 },
-  { label: "Chargebacks", kind: "out", val: "−$1.20", w: 5 },
-  { label: "Returns / damages", kind: "out", val: "−$0.90", w: 4 },
-  { label: "Advertising", kind: "out", val: "−$2.40", w: 10 },
-  { label: "Net PPM", kind: "net", val: "$4.60", w: 19 },
+  { label: "Wholesale price", value: "$24.00", amt: 24.0, kind: "base" },
+  { label: "COGS", value: "−$9.50", amt: 9.5, kind: "cost" },
+  { label: "Co-op / allowances", value: "−$3.60", amt: 3.6, kind: "cost" },
+  { label: "Freight / inbound", value: "−$1.80", amt: 1.8, kind: "cost" },
+  { label: "Chargebacks", value: "−$1.20", amt: 1.2, kind: "cost" },
+  { label: "Returns / damages", value: "−$0.90", amt: 0.9, kind: "cost" },
+  { label: "Advertising", value: "−$2.40", amt: 2.4, kind: "cost" },
+  { label: "Net PPM", value: "$4.60", amt: 4.6, kind: "net" },
+].map((r, i) => ({
+  ...r,
+  labelColor: r.kind === "cost" ? DIM : INK,
+  valColor: r.kind === "net" ? GREEN : r.kind === "cost" ? "rgba(196,100,63,0.9)" : MONO,
+  barColor: r.kind === "net" ? GREEN : r.kind === "cost" ? RED : "rgba(241,238,230,0.8)",
+  width: `${Math.max(2, (r.amt / WF_MAX) * 100).toFixed(1)}%`,
+  delay: `${(0.3 + i * 0.08).toFixed(2)}s`,
+}));
+
+const WORKSPACE_ROWS = [
+  {
+    marker: "A",
+    title: "ASIN toolkit",
+    body: "Paste your catalog. See who holds the buy box, which ASINs have no featured offer, 30/60-day price lows, and anything swinging past ±5%. Export to CSV.",
+  },
+  {
+    marker: "B",
+    title: "Weekly brief & playbooks",
+    body: "A live digest of the Amazon updates that slip past you, plus a curated library of how-tos: FNSKU labels, Subscribe & Save, Climate Pledge, ungating, chargeback disputes.",
+  },
+  {
+    marker: "C",
+    title: "Ask an Amazonian",
+    body: "A chat grounded in the playbooks and checked against current published guidance via live search. Send a photo of a label and HENRY flags what's missing.",
+  },
 ];
 
-function ProductPreview() {
-  return (
-    <div className="pv-panel" aria-hidden>
-      <div className="pv-head">
-        <div className="pv-dots"><span /><span /><span /></div>
-        <span className="pv-title">Profitability — net PPM by ASIN</span>
-        <span className="pv-tag">sample portfolio</span>
-      </div>
-      <div className="pv-body">
-        <div className="pv-stats">
-          <div className="pv-stat"><span className="pv-stat-lbl">Monthly revenue</span><span className="pv-stat-val">$184,600</span></div>
-          <div className="pv-stat"><span className="pv-stat-lbl">Net contribution</span><span className="pv-stat-val">$35,400</span></div>
-          <div className="pv-stat"><span className="pv-stat-lbl">Blended margin</span><span className="pv-stat-val pv-teal">19.2%</span></div>
-          <div className="pv-stat"><span className="pv-stat-lbl">Losing SKUs</span><span className="pv-stat-val pv-red">3</span></div>
-        </div>
-        <div className="pv-wf-head">32oz Insulated Bottle — margin waterfall</div>
-        <div className="waterfall">
-          {WATERFALL.map((r) => (
-            <div key={r.label} className="wf-row">
-              <div className="wf-label">{r.label}</div>
-              <div className="wf-track">
-                <div className={`wf-fill wf-${r.kind}`} style={{ width: `${r.w}%` }} />
-              </div>
-              <div className={`wf-val ${r.kind === "out" ? "wf-neg" : ""}`}>{r.val}</div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
+const HOW = [
+  { roman: "i.", title: "Bring your catalog", body: "Paste your ASINs. No integration, no login, nothing to install." },
+  { roman: "ii.", title: "See what's wrong", body: "Buy-box losses, suppressed offers, and price risk surface at a glance." },
+  { roman: "iii.", title: "Ask & act", body: "Plain-English, account-specific guidance, grounded in Amazon's published rules." },
+];
 
 export default function Landing() {
   return (
-    <div className="landing">
-      <nav className="landing-nav">
-        <div className="landing-nav-inner">
-          <div className="brand" title="HENRY — Helpful Expert, Navigating Retail Yield">
-            <Logo />
-            <span className="brand-word">
-              <span className="h">HENRY</span>
-            </span>
+    <div className="landing" id="top">
+      {/* NAV */}
+      <header className="l-nav">
+        <nav className="l-nav-inner">
+          <a href="#top" className="l-brand">
+            <span className="l-word">HENRY</span>
+            <span className="l-brand-tag">for Amazon 1P vendors</span>
+          </a>
+          <div className="l-nav-links">
+            <a href="#margin">Profitability</a>
+            <a href="#answers">Answers</a>
+            <a href="#how">How it works</a>
+            <Link href="/app" className="l-launch">
+              Launch HENRY
+            </Link>
           </div>
-          <Link href="/app" className="nav-cta">
-            Launch HENRY →
-          </Link>
-        </div>
-      </nav>
+        </nav>
+      </header>
 
-      <section className="hero">
-        <span className="eyebrow">Built for Amazon 1P vendors (and 3P sellers)</span>
-        <h1 className="hero-title">
-          Vendor Central <span className="h">analytics and answers</span>, in one place.
-        </h1>
-        <p className="hero-sub">
-          Cost increases that get auto-rejected, surprise chargebacks, CRAP-status SKUs, the 1P-vs-3P
-          question — Vendor Central is unforgiving and the answers are buried. HENRY gathers
-          Amazon&apos;s published guidance, checks it against live sources, and hands it back in plain
-          English. Track your buy box and pricing, and ask an Amazonian anything.
-        </p>
-        <div className="hero-cta">
-          <Link href="/app" className="btn-lg primary-lg">
-            Try it free
-            <IconArrowRight size={18} stroke={2} />
-          </Link>
-          <Link href="/app" className="btn-lg ghost-lg">
-            Browse the playbooks
-          </Link>
-        </div>
-        <p className="hero-note">No login or API key needed to explore — runs on built-in demo data.</p>
-      </section>
-
-      <section className="preview-band">
-        <div className="preview-cap">
-          <span className="eyebrow">See it in action</span>
-          <h2>Every SKU&apos;s true net margin — after co-op, chargebacks, and ads.</h2>
-          <p>
-            HENRY breaks down net PPM per ASIN — the contribution Vendor Central&apos;s reports
-            don&apos;t hand you directly — so you can see which SKUs actually make money.
-          </p>
-        </div>
-        <ProductPreview />
-      </section>
-
-      <section className="problem">
-        <p>
-          Amazon publishes label specs, fee changes, and program deadlines constantly — across
-          notifications and help pages that are easy to miss. 1P vendors lose margin to chargebacks,
-          suppressed buy boxes, and missed deadlines. The answers exist; they&apos;re just buried.
-          HENRY surfaces them.
-        </p>
-      </section>
-
-      <section className="features">
-        {FEATURES.map((f) => (
-          <div key={f.title} className="feature-card">
-            <div className="fc-icon">
-              <f.Icon size={28} stroke={1.6} />
+      {/* HERO */}
+      <section className="l-hero">
+        <div className="l-hero-inner">
+          <div className="l-rise">
+            <p className="l-eyebrow">Vendor Central intelligence</p>
+            <h1>
+              Everything a 1P vendor needs, <em>in one place.</em>
+            </h1>
+            <p className="l-hero-sub">
+              Pricing and buy-box tracking, true per-SKU margins, chargeback disputes, playbooks for
+              every program, and an Amazonian who answers anything. Vendor Central buries the answers
+              — HENRY puts them in one place, in plain English.
+            </p>
+            <div className="l-hero-cta">
+              <Link href="/app" className="l-btn-cream">
+                Start using — free in beta
+              </Link>
+              <Link href="/app" className="l-link-underline">
+                Browse the playbooks
+              </Link>
             </div>
-            <h3>{f.title}</h3>
-            <p>{f.body}</p>
+            <p className="l-hero-note">Free while in beta · no login or API key needed.</p>
           </div>
-        ))}
-      </section>
 
-      <section className="ask-section">
-        <h2>The questions vendors email in &mdash; answered instantly</h2>
-        <p className="ask-sub">
-          These are the real questions 1P vendors send their Amazon vendor manager and wait days to
-          hear back on. HENRY answers {TOTAL_QUESTIONS}+ of them on the spot, grounded in
-          Amazon&apos;s published guidance.
-        </p>
-        <div className="ask-grid">
-          {ASK_PREVIEW.map((c) => (
-            <div key={c.id} className="ask-cat">
-              <div className="ask-cat-label">{c.label}</div>
-              <ul>
-                {c.questions.slice(0, 3).map((q) => (
-                  <li key={q}>{q}</li>
+          {/* Margin-waterfall card */}
+          <div className="l-rise-delay">
+            <div className="l-card">
+              <div className="l-card-head">
+                <p className="mono-lbl">Margin waterfall</p>
+                <p className="mono-sub">32oz Insulated Bottle</p>
+              </div>
+              <div className="l-wf">
+                {WATERFALL.map((r) => (
+                  <div key={r.label} style={{ display: "contents" }}>
+                    <span className="l-wf-label" style={{ color: r.labelColor }}>
+                      {r.label}
+                    </span>
+                    <span
+                      className="l-wf-bar"
+                      style={{
+                        background: r.barColor,
+                        width: r.width,
+                        animation: `barGrow 0.8s cubic-bezier(0.2,0.7,0.2,1) ${r.delay} both`,
+                      }}
+                    />
+                    <span className="l-wf-val" style={{ color: r.valColor }}>
+                      {r.value}
+                    </span>
+                  </div>
                 ))}
-              </ul>
+              </div>
+              <div className="l-card-foot">
+                <span className="lbl">Net PPM per unit</span>
+                <span className="val">$4.60</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STAT BAND */}
+      <section className="l-statband">
+        <div className="l-statband-inner">
+          <div className="l-stat">
+            <p className="num">$184,600</p>
+            <p className="cap">Monthly revenue, sample portfolio</p>
+          </div>
+          <div className="l-stat">
+            <p className="num">$35,400</p>
+            <p className="cap">Net contribution after every deduction</p>
+          </div>
+          <div className="l-stat">
+            <p className="num">19.2%</p>
+            <p className="cap">Blended margin, net PPM basis</p>
+          </div>
+          <div className="l-stat">
+            <p className="num neg">3</p>
+            <p className="cap">SKUs quietly losing money</p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 01 — ONE WORKSPACE */}
+      <section id="margin" className="l-section">
+        <div className="l-grid-2">
+          <div>
+            <p className="l-section-eyebrow">01 — One workspace</p>
+            <h2 className="l-h2">
+              Your catalog, your margins, your questions — one tab instead of twelve.
+            </h2>
+            <p className="l-body">
+              Today the job means Vendor Central reports, help-page archaeology, and emails that take
+              days. HENRY pulls it into one workspace: live pricing and buy-box data, true net PPM per
+              ASIN, playbooks for every program, and answers on demand.
+            </p>
+          </div>
+          <div className="l-rows">
+            {WORKSPACE_ROWS.map((r) => (
+              <div key={r.marker} className="l-row">
+                <span className="l-row-marker">{r.marker}</span>
+                <div>
+                  <h3>{r.title}</h3>
+                  <p>{r.body}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 02 — ANSWERS */}
+      <section id="answers" className="l-answers">
+        <div className="l-section tight">
+          <div className="l-answers-head">
+            <p className="l-section-eyebrow">02 — Answers</p>
+            <h2 className="l-h2">The questions vendors email in, answered on the spot.</h2>
+            <p className="l-body">
+              These are real questions vendors send their vendor manager, then wait days on. HENRY
+              answers {TOTAL_QUESTIONS} of them instantly, each grounded in Amazon&apos;s published
+              guidance.
+            </p>
+          </div>
+          <div className="l-qgroups">
+            {ANSWER_GROUPS.map((group) => (
+              <div key={group.id} className="l-qgroup">
+                <h3>{group.label}</h3>
+                <div className="qs">
+                  {group.questions.slice(0, 3).map((q) => (
+                    <p key={q}>{q}</p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 64 }}>
+            <Link href="/app" className="l-btn-ink">
+              Ask HENRY
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 03 — HOW IT WORKS */}
+      <section id="how" className="l-section tight">
+        <p className="l-section-eyebrow">03 — How it works</p>
+        <div className="l-how">
+          {HOW.map((h) => (
+            <div key={h.roman} className="l-how-item">
+              <p className="l-roman">{h.roman}</p>
+              <h3>{h.title}</h3>
+              <p>{h.body}</p>
             </div>
           ))}
         </div>
-        <div style={{ textAlign: "center", marginTop: 30 }}>
-          <Link href="/app" className="btn-lg primary-lg">
-            Ask HENRY
-            <IconArrowRight size={18} stroke={2} />
+      </section>
+
+      {/* CLOSING CTA + FOOTER */}
+      <section className="l-cta-band">
+        <div className="l-cta-inner">
+          <h2>
+            Vendor Central answers, <em>without the digging.</em>
+          </h2>
+          <Link href="/app" className="l-btn-cream">
+            Launch HENRY
           </Link>
         </div>
-      </section>
-
-      <section className="steps">
-        <h2>How it works</h2>
-        <div className="steps-grid">
-          {STEPS.map((s) => (
-            <div key={s.n} className="step">
-              <div className="step-n">{s.n}</div>
-              <h4>{s.t}</h4>
-              <p>{s.d}</p>
+        <footer className="l-footer">
+          <div className="l-footer-inner">
+            <div>
+              <p className="l-footer-word">HENRY</p>
+              <p className="l-footer-backronym">
+                <b>H</b>elpful <b>E</b>xpert, <b>N</b>avigating <b>R</b>etail <b>Y</b>ield
+              </p>
             </div>
-          ))}
-        </div>
+            <p className="l-footer-disclaimer">
+              An independent prototype built from Amazon&apos;s publicly published seller &amp; vendor
+              documentation, using Claude with web search. Not affiliated with or endorsed by Amazon.
+              No confidential or internal data.
+            </p>
+          </div>
+        </footer>
       </section>
-
-      <section className="cta-band">
-        <h2>
-          Vendor Central answers, <span className="h">without the digging.</span>
-        </h2>
-        <Link href="/app" className="btn-lg primary-lg">
-          Launch HENRY
-          <IconArrowRight size={18} stroke={2} />
-        </Link>
-      </section>
-
-      <footer className="landing-footer">
-        <div className="brand" title="HENRY — Helpful Expert, Navigating Retail Yield">
-          <Logo size={26} />
-          <span className="brand-word">
-            <span className="h">HENRY</span>
-          </span>
-        </div>
-        <span className="footer-backronym">
-          <b>H</b>elpful <b>E</b>xpert, <b>N</b>avigating <b>R</b>etail <b>Y</b>ield
-        </span>
-        <span className="muted footer-disclaimer">
-          An independent prototype. Built from Amazon&apos;s publicly published seller &amp; vendor
-          documentation using Claude + web search — not affiliated with or endorsed by Amazon, and
-          using no confidential or internal data.
-        </span>
-      </footer>
     </div>
   );
 }

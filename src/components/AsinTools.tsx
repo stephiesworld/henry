@@ -1,16 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import {
-  IconBox,
-  IconAlertTriangle,
-  IconUserX,
-  IconActivity,
-  IconDownload,
-  IconPlus,
-  IconPlug,
-  IconSearch,
-} from "@tabler/icons-react";
 import type { AnalyzeResponse, AsinAnalysis } from "@/lib/types";
 
 type Filter = "all" | "no-offer" | "not-amazon" | "high-variance";
@@ -163,6 +153,7 @@ export default function AsinTools() {
   return (
     <div>
       <div className="page-head">
+        <p className="eyebrow">Workspace / 01</p>
         <h1>ASIN toolkit</h1>
         <p>
           Paste your ASINs (one per line, or comma-separated). HENRY pulls who&apos;s winning the buy
@@ -181,18 +172,15 @@ export default function AsinTools() {
 
       <div className="row" style={{ marginTop: 12 }}>
         <button className="primary" onClick={analyze} disabled={loading || !input.trim()}>
-          <IconSearch size={16} stroke={2} />
           {loading ? "Analyzing…" : "Analyze ASINs"}
         </button>
         <button className="ghost" onClick={() => setInput(SAMPLE)} disabled={loading}>
           Load sample
         </button>
         <button className="ghost" onClick={saveList} disabled={loading || !input.trim()}>
-          <IconPlus size={15} stroke={2} />
           Save list
         </button>
         <button className="ghost" onClick={() => setShowKey((s) => !s)} disabled={loading}>
-          <IconPlug size={15} stroke={2} />
           {keepaKey ? "Keepa connected" : "Connect Keepa"}
         </button>
         <div className="spacer" />
@@ -242,26 +230,25 @@ export default function AsinTools() {
         <>
           <div className="statgrid">
             <div className={`statcard ${filter === "all" ? "active" : ""}`} onClick={() => setFilter("all")}>
-              <div className="lbl"><IconBox size={14} stroke={1.8} />ASINs analyzed</div>
+              <div className="lbl">ASINs analyzed</div>
               <div className="num">{counts.total}</div>
             </div>
             <div className={`statcard bad ${filter === "no-offer" ? "active" : ""}`} onClick={() => setFilter("no-offer")}>
-              <div className="lbl"><IconAlertTriangle size={14} stroke={1.8} />No featured offer</div>
+              <div className="lbl">No featured offer</div>
               <div className="num">{counts.noOffer}</div>
             </div>
             <div className={`statcard teal ${filter === "not-amazon" ? "active" : ""}`} onClick={() => setFilter("not-amazon")}>
-              <div className="lbl"><IconUserX size={14} stroke={1.8} />Buy box not Amazon</div>
+              <div className="lbl">Buy box not Amazon</div>
               <div className="num">{counts.notAmazon}</div>
             </div>
             <div className={`statcard warn ${filter === "high-variance" ? "active" : ""}`} onClick={() => setFilter("high-variance")}>
-              <div className="lbl"><IconActivity size={14} stroke={1.8} />Variance &gt; &plusmn;5%</div>
+              <div className="lbl">Variance &gt; &plusmn;5%</div>
               <div className="num">{counts.highVar}</div>
             </div>
           </div>
 
           <div className="row end" style={{ marginTop: 14 }}>
             <button className="ghost" onClick={exportCsv}>
-              <IconDownload size={15} stroke={2} />
               Export CSV
             </button>
           </div>
