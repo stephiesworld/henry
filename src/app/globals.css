@@ -26,6 +26,9 @@
   --mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
   --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
   --serif: "Newsreader", Georgia, serif;
+  /* App titles/headings (screen h1s + card/section headings). Small uppercase
+     mono labels/eyebrows and all numeric/tabular text stay --mono. */
+  --display: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 
 * {
@@ -246,11 +249,11 @@ textarea::placeholder {
 }
 .page-head h1 {
   margin: 0 0 10px;
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 28px;
   font-weight: 500;
   line-height: 1.18;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
 }
 .page-head p {
   margin: 0;
@@ -625,10 +628,11 @@ td.title {
 }
 .feature-tile h3 {
   margin: 2px 0 0;
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 18px;
   font-weight: 500;
   line-height: 1.25;
+  letter-spacing: -0.01em;
   color: var(--text);
 }
 .feature-tile p {
@@ -748,9 +752,10 @@ td.title {
 }
 .empty-state h4 {
   margin: 0 0 6px;
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 15px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .empty-state p {
   margin: 0 auto;
@@ -778,9 +783,10 @@ td.title {
 }
 .qa-cat-head h3 {
   margin: 0;
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 19px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .qa-list {
   display: grid;
@@ -837,9 +843,10 @@ td.title {
 }
 .uz-title {
   color: var(--text);
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 16px;
   font-weight: 500;
+  letter-spacing: -0.01em;
   margin-top: 12px;
 }
 .uz-sub {
@@ -1072,8 +1079,9 @@ td.title {
   padding: 24px 28px;
 }
 .pnl-panel h3 {
-  font-family: var(--mono);
+  font-family: var(--display);
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .waterfall {
   margin-top: 16px;
@@ -1299,8 +1307,9 @@ td.title {
   margin: 10px 0;
 }
 .md .md-h {
-  font-family: var(--mono);
+  font-family: var(--display);
   font-weight: 500;
+  letter-spacing: -0.01em;
   margin: 18px 0 6px;
 }
 .md .md-h1 {
@@ -1567,9 +1576,10 @@ td.title {
 }
 .modal-head h2 {
   margin: 0 0 8px;
-  font-family: var(--mono);
+  font-family: var(--display);
   font-size: 22px;
   font-weight: 500;
+  letter-spacing: -0.01em;
 }
 .modal-head p {
   margin: 0 0 22px;
