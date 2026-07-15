@@ -1,21 +1,70 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type ReactNode } from "react";
 import { IconArrowLeft, IconArrowRight } from "@tabler/icons-react";
-import { PLAYBOOKS, type Playbook } from "@/lib/knowledge";
+import { PLAYBOOKS, getPlaybook, type Playbook } from "@/lib/knowledge";
 
-function md(text: string) {
-  return text.split("\n").map((line, i) => {
-    const parts = line.split(/(\*\*[^*]+\*\*)/g).map((p, j) =>
-      p.startsWith("**") && p.endsWith("**") ? <strong key={j}>{p.slice(2, -2)}</strong> : <span key={j}>{p}</span>
-    );
-    const heading = line.startsWith("## ");
-    return (
-      <p key={i} className={heading ? "md-h md-h3" : "md-p"}>
-        {heading ? line.slice(3) : parts}
-      </p>
-    );
+/** Inline markdown: **bold**, *italic*, and [[playbook-cross-links]]. */
+function inline(text: string, openById: (id: string) => void): ReactNode[] {
+  return text.split(/(\*\*[^*]+\*\*|\*[^*]+\*|\[\[[^\]]+\]\])/g).map((part, i) => {
+    if (part.startsWith("**") && part.endsWith("**")) {
+      return <strong key={i}>{part.slice(2, -2)}</strong>;
+    }
+    if (part.startsWith("*") && part.endsWith("*") && part.length > 2) {
+      return <em key={i}>{part.slice(1, -1)}</em>;
+    }
+    if (part.startsWith("[[") && part.endsWith("]]")) {
+      const id = part.slice(2, -2);
+      const target = getPlaybook(id);
+      if (!target) return <span key={i}>{id.replace(/-/g, " ")}</span>;
+      return (
+        <button key={i} className="pb-xlink" onClick={() => openById(id)}>
+          {target.title}
+        </button>
+      );
+    }
+    return <span key={i}>{part}</span>;
   });
+}
+
+/** Block markdown: paragraphs, - bullets, 1. numbered steps, *fine print*. */
+function Md({ text, openById }: { text: string; openById: (id: string) => void }) {
+  const blocks: ReactNode[] = [];
+  let list: { type: "ul" | "ol"; items: ReactNode[] } | null = null;
+
+  const flush = () => {
+    if (!list) return;
+    const key = `l${blocks.length}`;
+    blocks.push(
+      list.type === "ul" ? <ul key={key}>{list.items}</ul> : <ol key={key}>{list.items}</ol>
+    );
+    list = null;
+  };
+
+  text.split("\n").forEach((raw, i) => {
+    const line = raw.trim();
+    const bullet = line.match(/^- (.*)/);
+    const step = line.match(/^\d+\. (.*)/);
+    if (bullet || step) {
+      const type = bullet ? "ul" : "ol";
+      if (!list || list.type !== type) {
+        flush();
+        list = { type, items: [] };
+      }
+      list.items.push(<li key={i}>{inline((bullet ?? step)![1], openById)}</li>);
+      return;
+    }
+    flush();
+    if (!line) return;
+    if (/^\*[^*].*\*$/.test(line)) {
+      blocks.push(<p key={i} className="pb-fine">{inline(line.slice(1, -1), openById)}</p>);
+      return;
+    }
+    blocks.push(<p key={i}>{inline(line, openById)}</p>);
+  });
+  flush();
+
+  return <>{blocks}</>;
 }
 
 const CATEGORIES = [
@@ -48,7 +97,16 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
     );
   }, [cat, query]);
 
+  const openById = (id: string) => {
+    const p = getPlaybook(id);
+    if (p) {
+      setOpen(p);
+      window.scrollTo({ top: 0 });
+    }
+  };
+
   if (open) {
+    const structured = Boolean(open.whyItMatters || open.problem || open.resolve);
     return (
       <div>
         <button className="ghost" onClick={() => setOpen(null)}>
@@ -62,8 +120,42 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
         <div className="page-head" style={{ marginTop: 12, marginBottom: 8 }}>
           <h1>{open.title}</h1>
         </div>
-        <div className="md">{md(open.body)}</div>
-        <div className="row" style={{ marginTop: 20 }}>
+
+        {structured ? (
+          <div className="pb-detail">
+            {open.whyItMatters && (
+              <section className="pb-why">
+                <p className="pb-label">Why it matters to you</p>
+                <Md text={open.whyItMatters} openById={openById} />
+              </section>
+            )}
+            {open.problem && (
+              <section className="pb-section">
+                <p className="pb-label">What&rsquo;s the problem</p>
+                <Md text={open.problem} openById={openById} />
+              </section>
+            )}
+            {open.whatYouNeed && (
+              <section className="pb-section">
+                <p className="pb-label">What you&rsquo;ll need</p>
+                <Md text={open.whatYouNeed} openById={openById} />
+              </section>
+            )}
+            {open.resolve && (
+              <section className="pb-section">
+                <p className="pb-label">How to resolve</p>
+                <Md text={open.resolve} openById={openById} />
+              </section>
+            )}
+            {open.caveat && <p className="pb-caveat">{inline(open.caveat, openById)}</p>}
+          </div>
+        ) : (
+          <div className="md pb-legacy">
+            <Md text={open.body ?? ""} openById={openById} />
+          </div>
+        )}
+
+        <div className="row" style={{ marginTop: 24 }}>
           <button
             className="primary"
             onClick={() =>

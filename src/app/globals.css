@@ -1297,6 +1297,121 @@ td.title {
   margin: 14px 0 0;
 }
 
+/* ===================== Playbook detail ===================== */
+.pb-detail {
+  max-width: 760px;
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+  font-size: 14.5px;
+  line-height: 1.7;
+}
+.pb-detail p {
+  margin: 0 0 10px;
+}
+.pb-detail p:last-child {
+  margin-bottom: 0;
+}
+.pb-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-faint);
+  margin: 0 0 10px;
+}
+.pb-why {
+  background: linear-gradient(135deg, rgba(239, 124, 62, 0.1), rgba(239, 124, 62, 0.04));
+  border: 1px solid rgba(239, 124, 62, 0.28);
+  border-left: 3px solid var(--accent);
+  border-radius: var(--radius);
+  padding: 18px 22px;
+}
+.pb-why .pb-label {
+  color: var(--accent);
+}
+.pb-section {
+  border-top: 1px solid var(--hairline);
+  padding-top: 18px;
+}
+.pb-detail ul,
+.pb-detail ol {
+  list-style: none;
+  margin: 4px 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+.pb-detail ul li {
+  position: relative;
+  padding-left: 20px;
+}
+.pb-detail ul li::before {
+  content: "–";
+  position: absolute;
+  left: 0;
+  color: var(--accent-dim);
+}
+.pb-detail ol {
+  counter-reset: pb-step;
+}
+.pb-detail ol li {
+  counter-increment: pb-step;
+  position: relative;
+  padding-left: 36px;
+}
+.pb-detail ol li::before {
+  content: counter(pb-step, decimal-leading-zero);
+  position: absolute;
+  left: 0;
+  top: 2px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  color: var(--accent);
+}
+.pb-caveat {
+  margin: 0;
+  border-top: 1px solid var(--hairline);
+  padding-top: 16px;
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-faint);
+  line-height: 1.6;
+}
+.pb-xlink {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  text-decoration-color: var(--accent-dim);
+  text-underline-offset: 3px;
+}
+.pb-xlink:hover {
+  color: var(--accent-hover);
+}
+.pb-legacy .pb-fine {
+  font-size: 12.5px;
+  font-style: italic;
+  color: var(--text-faint);
+}
+.pb-legacy ul,
+.pb-legacy ol {
+  margin: 8px 0;
+  padding-left: 22px;
+}
+.pb-legacy li {
+  margin: 5px 0;
+}
+.pb-legacy p {
+  margin: 10px 0;
+}
+
 /* ===================== Markdown ===================== */
 .md {
   font-size: 14.5px;

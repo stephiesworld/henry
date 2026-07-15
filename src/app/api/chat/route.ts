@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import { PLAYBOOKS, retrievePlaybooks } from "@/lib/knowledge";
+import { PLAYBOOKS, retrievePlaybooks, playbookText } from "@/lib/knowledge";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -50,7 +50,7 @@ function buildSystem(latestUserText: string): Anthropic.TextBlockParam[] {
       type: "text",
       text:
         `=== RELEVANT PLAYBOOKS (prefer these; confirm specifics via web search) ===\n` +
-        relevant.map((p) => `## ${p.title}\n${p.body}`).join("\n\n"),
+        relevant.map((p) => `## ${p.title}\n${playbookText(p)}`).join("\n\n"),
     });
   }
   return blocks;
