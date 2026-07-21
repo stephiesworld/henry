@@ -1,8 +1,10 @@
 import Anthropic from "@anthropic-ai/sdk";
+import OpenAI from "openai";
 import { writeFileSync } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
 import { draftDispute, type DisputeDraft, type DraftResult } from "../src/lib/dispute";
+import { draftDisputeOpenAI } from "./openai-draft";
 import { deterministic, deterministicPass, judge, type Check, type JudgeVerdict } from "./graders";
 import { CASES, type DisputeCase } from "./cases";
 
@@ -15,17 +17,28 @@ import { CASES, type DisputeCase } from "./cases";
  *   HENRY_EVAL_MOCK=1 npm run eval     # synthetic outputs — proves the pipeline runs, no key/cost
  */
 
-// Sticker pricing, USD per 1M tokens (see the claude-api model table).
+// Sticker pricing, USD per 1M tokens (Anthropic: see the claude-api model
+// table; OpenAI: GPT-5.6 family pricing as of 2026-07).
 const PRICING: Record<string, { in: number; out: number }> = {
   "claude-opus-4-8": { in: 5, out: 25 },
   "claude-sonnet-5": { in: 3, out: 15 }, // $2/$10 intro through 2026-08-31
   "claude-haiku-4-5": { in: 1, out: 5 },
+  "gpt-5.6-sol": { in: 5, out: 30 },
+  "gpt-5.6-terra": { in: 2.5, out: 15 },
+  "gpt-5.6-luna": { in: 1, out: 6 },
 };
 
-const VARIANTS: { key: string; model: string }[] = [
-  { key: "opus", model: "claude-opus-4-8" },
-  { key: "sonnet", model: "claude-sonnet-5" },
-  { key: "haiku", model: "claude-haiku-4-5" },
+type Provider = "anthropic" | "openai";
+
+// Tier-for-tier across vendors: sol↔opus (flagship), terra↔sonnet (balanced),
+// luna↔haiku (fast/cheap). The judge stays Opus 4.8 for every variant.
+const VARIANTS: { key: string; model: string; provider: Provider }[] = [
+  { key: "opus", model: "claude-opus-4-8", provider: "anthropic" },
+  { key: "sonnet", model: "claude-sonnet-5", provider: "anthropic" },
+  { key: "haiku", model: "claude-haiku-4-5", provider: "anthropic" },
+  { key: "gpt-sol", model: "gpt-5.6-sol", provider: "openai" },
+  { key: "gpt-terra", model: "gpt-5.6-terra", provider: "openai" },
+  { key: "gpt-luna", model: "gpt-5.6-luna", provider: "openai" },
 ];
 
 const CONCURRENCY = 4;
@@ -100,9 +113,19 @@ function costOf(model: string, usage: { input_tokens: number; output_tokens: num
   return (usage.input_tokens / 1e6) * p.in + (usage.output_tokens / 1e6) * p.out;
 }
 
-async function runOne(client: Anthropic | null, c: DisputeCase, model: string): Promise<CaseResult> {
+async function runOne(
+  client: Anthropic | null,
+  openai: OpenAI | null,
+  c: DisputeCase,
+  model: string,
+  provider: Provider,
+): Promise<CaseResult> {
   try {
-    const result = MOCK || !client ? mockDraft(c) : await draftDispute(client, c.input, model);
+    const result = MOCK
+      ? mockDraft(c)
+      : provider === "openai"
+        ? await draftDisputeOpenAI(openai!, c.input, model)
+        : await draftDispute(client!, c.input, model);
     const checks = deterministic(c, result.draft);
     const detPass = deterministicPass(checks);
     const verdict = MOCK || !client ? mockVerdict(c) : await judge(client, c, result.draft);
@@ -184,14 +207,23 @@ function aggregate(key: string, model: string, results: CaseResult[]): Agg {
 async function main() {
   const arg = process.argv.indexOf("--variant");
   const only = arg >= 0 ? process.argv[arg + 1] : null;
-  const variants = only ? VARIANTS.filter((v) => v.key === only) : VARIANTS;
+  let variants = only ? VARIANTS.filter((v) => v.key === only) : VARIANTS;
 
   const hasKey = !!process.env.ANTHROPIC_API_KEY;
+  const hasOpenAIKey = !!process.env.OPENAI_API_KEY;
   if (!MOCK && !hasKey) {
     console.error("No ANTHROPIC_API_KEY set. Run real evals with a key, or HENRY_EVAL_MOCK=1 to smoke-test the pipeline.");
     process.exit(1);
   }
+  if (!MOCK && !hasOpenAIKey) {
+    const skipped = variants.filter((v) => v.provider === "openai");
+    if (skipped.length) {
+      console.log(`No OPENAI_API_KEY set — skipping ${skipped.map((v) => v.key).join(", ")}.`);
+      variants = variants.filter((v) => v.provider === "anthropic");
+    }
+  }
   const client = MOCK || !hasKey ? null : new Anthropic();
+  const openai = MOCK || !hasOpenAIKey ? null : new OpenAI();
 
   console.log(`\nHENRY chargeback-dispute eval — ${CASES.length} cases × ${variants.length} variant(s)${MOCK ? "  [MOCK]" : ""}\n`);
 
@@ -200,7 +232,7 @@ async function main() {
 
   for (const v of variants) {
     process.stdout.write(`Running ${v.key} (${v.model}) … `);
-    const results = await pool(CASES, CONCURRENCY, (c) => runOne(client, c, v.model));
+    const results = await pool(CASES, CONCURRENCY, (c) => runOne(client, openai, c, v.model, v.provider));
     allResults[v.key] = results;
     const agg = aggregate(v.key, v.model, results);
     aggs.push(agg);

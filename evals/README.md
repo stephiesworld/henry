@@ -25,8 +25,12 @@ ASIN / amount / root cause, or it doesn't.
      LLM judge misses: confidently wrong facts.
    - **LLM-as-judge** — a 1–5 rubric for what code can't score: persuasiveness,
      correct strategy for the root cause, professional tone, factual grounding.
-3. **Model tradeoff table** (`run.ts`) — runs the whole dataset across Opus 4.8,
-   Sonnet 5, and Haiku 4.5 and reports pass rates, p50 latency, and $/dispute.
+3. **Model tradeoff table** (`run.ts`) — runs the whole dataset across two
+   vendors, tier for tier — Opus 4.8 / Sonnet 5 / Haiku 4.5 and GPT-5.6
+   Sol / Terra / Luna — and reports pass rates, p50 latency, and $/dispute.
+   Every variant is judged by the same model (Opus 4.8) over the same prompt
+   and output contract (`openai-draft.ts` reuses both), so rows are
+   apples-to-apples.
 
 ## Dataset
 
@@ -43,11 +47,14 @@ ASIN / amount / root cause, or it doesn't.
 ```bash
 npm install
 
-# Real run (needs ANTHROPIC_API_KEY) — writes RESULTS.md + results.json
+# Real run (needs ANTHROPIC_API_KEY) — writes RESULTS.md + results.json.
+# Set OPENAI_API_KEY too for the GPT-5.6 rows; without it they're skipped
+# (the judge is Anthropic-side, so ANTHROPIC_API_KEY is always required).
 npm run eval
 
 # One variant only
 npm run eval -- --variant sonnet
+npm run eval -- --variant gpt-terra
 
 # Smoke-test the pipeline with synthetic outputs (no key, no cost)
 HENRY_EVAL_MOCK=1 npm run eval
