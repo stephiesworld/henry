@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import { BASE_PERSONA, DISPUTE_SYSTEM_SUFFIX, buildChargebackUserMarkdown } from "../../../lib/dispute";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,9 +14,6 @@ interface GenBody {
   task?: Task;
   input?: Record<string, string>;
 }
-
-const BASE_PERSONA =
-  "You are HENRY, a seasoned ex-Amazon CSM helping 1P vendors and 3P sellers. Be concrete, plain-English, and actionable. Output clean Markdown (##/### headings, **bold**, and - bullet lists). No preamble or sign-off.";
 
 function buildPrompt(task: Task, input: Record<string, string>): {
   system: string;
@@ -51,17 +49,16 @@ function buildPrompt(task: Task, input: Record<string, string>): {
     case "chargeback":
       return {
         useWebSearch: false,
-        system:
-          BASE_PERSONA +
-          " You draft 1P vendor chargeback disputes that are ready to paste into Vendor Central, framed to maximize approval.",
-        user:
-          `Draft a chargeback dispute for a 1P vendor.\n\n` +
-          `Chargeback type: ${input.type || "(unspecified)"}\n` +
-          `PO / reference: ${input.reference || "(none given)"}\n` +
-          `Marketplace: ${input.marketplace || "amazon.com"}\n` +
-          `What happened (vendor's account): ${input.details || "(none given)"}\n` +
-          `Evidence the vendor has: ${input.evidence || "(none listed)"}\n\n` +
-          `Produce:\n## Dispute narrative\nA tight, professional narrative to submit (reference the PO and chargeback type, state the facts, and assert why the deduction is invalid).\n\n## Evidence to attach\nA checklist mapping each piece of evidence to what it proves for THIS chargeback type — and flag anything important the vendor is missing.\n\n## Tips & deadline\nFiling-window reminder and 2–3 tips that improve approval odds for this chargeback type.`,
+        // Persona + fact-assembly are shared with the structured/eval path in lib/dispute.ts
+        // so production and the eval harness exercise one prompt.
+        system: BASE_PERSONA + DISPUTE_SYSTEM_SUFFIX,
+        user: buildChargebackUserMarkdown({
+          type: input.type,
+          reference: input.reference,
+          marketplace: input.marketplace,
+          details: input.details,
+          evidence: input.evidence,
+        }),
       };
     case "optimize":
       return {

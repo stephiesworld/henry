@@ -7,3 +7,6 @@ out
 .DS_Store
 next-env.d.ts
 .vercel
+
+# TypeScript incremental build info
+*.tsbuildinfo
