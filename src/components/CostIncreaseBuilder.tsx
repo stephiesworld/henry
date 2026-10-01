@@ -74,13 +74,13 @@ export default function CostIncreaseBuilder({ onAsk }: { onAsk: (q: string) => v
 
     let angle: string;
     if (amazonMarginAfter !== null && amazonMarginAfter >= 12) {
-      angle = `Frame it around Amazon's profit: even at the new cost, Amazon keeps roughly ${amazonMarginAfter.toFixed(0)}% retail margin — the increase doesn't threaten its economics.`;
+      angle = `Frame it around Amazon's profit: even at the new cost, Amazon keeps roughly ${amazonMarginAfter.toFixed(0)}% retail margin, so the increase doesn't hurt Amazon much.`;
     } else if (!externalRaised) {
-      angle = "Raise your price on other channels first — Amazon benchmarks external pricing, and a higher street price is your single strongest lever before submitting.";
+      angle = "Raise your price on other channels first. Amazon checks external pricing, and a higher street price is the best thing you can have going in.";
     } else if (askPct >= 20) {
       angle = "A 20%+ ask rarely clears in one pass. Consider phasing the increase, or pair it with a cost-savings program (Direct Import / Vendor Flex) to offset Amazon's economics.";
     } else {
-      angle = "Lead with the documented input-cost drivers and tie the request to keeping the item sustainable to supply — frame it as protecting Amazon's in-stock position, not just your margin.";
+      angle = "Lead with the documented input-cost drivers and tie the request to keeping the item sustainable to supply. Amazon cares more about staying in stock than about your margin, so lead with that.";
     }
 
     return { currentCOGS, newCOGS, cogsDelta, suggestedWholesale, askPct, marginNow, marginIfUnapproved, amazonMarginNow, amazonMarginAfter, score, tier, angle };
@@ -124,7 +124,7 @@ export default function CostIncreaseBuilder({ onAsk }: { onAsk: (q: string) => v
     <div>
       <label className="gen-field" style={{ maxWidth: 420, marginBottom: 18 }}>
         <span>Product / ASIN</span>
-        <input type="text" placeholder="B08N5WRWNW — Coconut oil 16oz" value={product} onChange={(e) => setProduct(e.target.value)} />
+        <input type="text" placeholder="B08N5WRWNW, coconut oil 16oz" value={product} onChange={(e) => setProduct(e.target.value)} />
       </label>
 
       <h3 className="cb-h" style={{ marginTop: 0 }}>Landed COGS breakdown ($/unit)</h3>
@@ -182,7 +182,7 @@ export default function CostIncreaseBuilder({ onAsk }: { onAsk: (q: string) => v
       {wholesale > 0 && (
         <p className="footnote">
           Without relief, your margin on this item drops from {calc.marginNow.toFixed(1)}% to{" "}
-          {calc.marginIfUnapproved.toFixed(1)}% — that compression is your strongest justification.
+          {calc.marginIfUnapproved.toFixed(1)}%. Lead with that number in your request.
         </p>
       )}
 

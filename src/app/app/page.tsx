@@ -10,6 +10,7 @@ import Generators from "@/components/Generators";
 import VendorQA from "@/components/VendorQA";
 import Chargebacks from "@/components/Chargebacks";
 import Profitability from "@/components/Profitability";
+import BoxMark from "@/components/BoxMark";
 import WelcomeTour from "@/components/WelcomeTour";
 import ComingSoonModal, { type PreviewKind } from "@/components/ComingSoonModal";
 
@@ -89,6 +90,7 @@ export default function AppPage() {
     <div className="app-shell">
       <aside className="sidebar">
         <Link href="/" className="side-brand" aria-label="HENRY home">
+          <BoxMark size={24} />
           <span className="side-brand-text">
             <span className="h">HENRY</span>
             <span className="side-tag">your local fulfillment center</span>
@@ -96,28 +98,20 @@ export default function AppPage() {
         </Link>
 
         <nav className="side-nav">
-          {(() => {
-            let idx = 0;
-            return NAV_GROUPS.map((group) => (
-              <div key={group.label} className="nav-group">
-                <p className="nav-group-label">{group.label}</p>
-                {group.items.map(({ id, label }) => {
-                  idx += 1;
-                  const num = String(idx).padStart(2, "0");
-                  return (
-                    <button
-                      key={id}
-                      className={`nav-item ${tab === id ? "active" : ""}`}
-                      onClick={() => setTab(id)}
-                    >
-                      <span className="nav-num">{num}</span>
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            ));
-          })()}
+          {NAV_GROUPS.map((group) => (
+            <div key={group.label} className="nav-group">
+              <p className="nav-group-label">{group.label}</p>
+              {group.items.map(({ id, label }) => (
+                <button
+                  key={id}
+                  className={`nav-item ${tab === id ? "active" : ""}`}
+                  onClick={() => setTab(id)}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          ))}
         </nav>
 
         <div className="side-foot">

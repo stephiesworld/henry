@@ -9,7 +9,7 @@ const CONTENT: Record<PreviewKind, { Icon: typeof IconX; title: string; intro: s
     Icon: IconPlugConnected,
     title: "Connect Vendor Central",
     intro:
-      "In production, HENRY links to your Amazon Vendor Central through the official Selling Partner API (SP-API) — so this fills in automatically, no CSV needed.",
+      "In production, HENRY links to your Amazon Vendor Central through the official Selling Partner API (SP-API), so this fills in on its own and you won't need a CSV.",
     points: [
       "Purchase orders & demand forecasts",
       "Sales, inventory & traffic reports",
@@ -17,13 +17,13 @@ const CONTENT: Record<PreviewKind, { Icon: typeof IconX; title: string; intro: s
       "Chargebacks & deductions (via report sync)",
     ],
     footer:
-      "Requires Amazon's SP-API app approval and your one-time authorization. For now: upload a CSV or enter your numbers — it works exactly the same.",
+      "Requires Amazon's SP-API app approval and your one-time authorization. Until then, upload a CSV or type your numbers in. Everything else works the same.",
   },
   accounts: {
     Icon: IconUserCircle,
     title: "Save across devices",
     intro:
-      "Accounts are coming. Today HENRY saves your lists, P&L, and uploads in this browser. With an account, your data follows you to any device — and your team.",
+      "Accounts are coming. Today HENRY saves your lists, P&L, and uploads in this browser. With an account, your data follows you to any device and your team can see it too.",
     points: [
       "Secure sign-in (email or Google)",
       "Your catalog, P&L, and chargeback history saved to your account",

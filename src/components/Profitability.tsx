@@ -87,7 +87,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
       });
       const mapped = mapPnlRows(parsed.data);
       if (!mapped.length) {
-        setImportNote("Couldn't read SKUs — need at least a wholesale price and COGS column.");
+        setImportNote("Couldn't read any SKUs. The file needs at least a wholesale price and COGS column.");
         return;
       }
       persist([...rows, ...mapped]);
@@ -121,9 +121,8 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
   return (
     <div>
       <div className="page-head">
-        <p className="eyebrow">Workspace / 02</p>
         <div className="head-row">
-          <h1>Profitability — net PPM by ASIN</h1>
+          <h1>Profitability</h1>
           {onConnect && (
             <button className="connect-btn" onClick={onConnect}>
               Connect Vendor Central
@@ -132,9 +131,9 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           )}
         </div>
         <p>
-          What you <em>actually</em> earn per unit after every Amazon deduction — co-op, freight,
-          chargebacks, returns, and ads. Vendor Central hides this; HENRY makes it the headline. Edit
-          the numbers inline, or load a sample to explore.
+          Net PPM by ASIN: what&apos;s left per unit once co-op, freight, chargebacks, returns and
+          ads are paid. Vendor Central doesn&apos;t show this number anywhere. Type your own numbers
+          in, or load the sample catalog to see how it works.
         </p>
       </div>
 
@@ -199,16 +198,16 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
             />
             %{" "}
             {portfolio.blendedMarginPct < benchmark
-              ? `— you're ${(benchmark - portfolio.blendedMarginPct).toFixed(1)} pts below.`
-              : "— you're at or above it."}
+              ? `You're ${(benchmark - portfolio.blendedMarginPct).toFixed(1)} pts below.`
+              : "You're at or above it."}
           </div>
 
           {portfolio.foolsGoldCount > 0 && (
             <div className="cb-flag" style={{ marginTop: 14 }}>
               <span className="cb-flag-mark">!</span>
-              {portfolio.foolsGoldCount} &ldquo;Fool&apos;s Gold&rdquo; ASIN{portfolio.foolsGoldCount > 1 ? "s" : ""} — high
-              revenue but margin under 5%. High volume is hiding thin profit; these are the ones to
-              re-price, re-SKU, or move to 3P.
+              {portfolio.foolsGoldCount} &ldquo;Fool&apos;s Gold&rdquo; ASIN{portfolio.foolsGoldCount > 1 ? "s" : ""} selling
+              well but keeping less than 5%. The sales volume makes them look healthy. These are the
+              ones to reprice, re-SKU or move to 3P.
             </div>
           )}
 
@@ -272,7 +271,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           {selected && selBase && selAdj && (
             <div className="pnl-panel">
               <div className="row" style={{ justifyContent: "space-between" }}>
-                <h3 style={{ margin: 0, fontSize: 16 }}>{selected.title || selected.asin || "SKU"} — margin waterfall</h3>
+                <h3 style={{ margin: 0, fontSize: 16 }}>Where the money goes: {selected.title || selected.asin || "SKU"}</h3>
                 <button className="pnl-del" onClick={() => setSelectedId(null)} aria-label="Close"><IconX size={16} stroke={2} /></button>
               </div>
 
@@ -325,7 +324,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
               <div className="row" style={{ marginTop: 16 }}>
                 <button
                   className="accent-ghost"
-                  onClick={() => onAsk(`My ASIN ${selected.asin || selected.title} has a net PPM of $${selBase.netPPM.toFixed(2)} (${selBase.marginPct.toFixed(1)}% margin) on 1P after co-op, chargebacks, and ads. How do I improve its profitability — and should it stay on 1P or move to 3P?`)}
+                  onClick={() => onAsk(`My ASIN ${selected.asin || selected.title} has a net PPM of $${selBase.netPPM.toFixed(2)} (${selBase.marginPct.toFixed(1)}% margin) on 1P after co-op, chargebacks, and ads. How do I improve its profitability, and should it stay on 1P or move to 3P?`)}
                 >
                   Ask HENRY how to fix this SKU
                 </button>

@@ -27,7 +27,7 @@ export async function streamPost(
     }
   } catch (err) {
     if ((err as Error).name === "AbortError") {
-      throw new Error("This took too long and timed out. Try again — briefs run faster on retry.");
+      throw new Error("This took too long and timed out. Try again, it's usually faster the second time.");
     }
     throw err;
   } finally {

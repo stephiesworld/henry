@@ -35,12 +35,11 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
   return (
     <div>
       <div className="page-head">
-        <p className="eyebrow">Knowledge / 01</p>
-        <h1>HENRY&apos;s weekly brief</h1>
+        <h1>Weekly brief</h1>
         <p>
-          The Amazon Seller &amp; Vendor Central updates you didn&apos;t read — gathered, checked, and
-          summarized into what changed, who it affects, and what to do. The whole point of HENRY: stop
-          missing the announcements that cost you money.
+          Amazon posts changes to Seller and Vendor Central every week and most of them go unread.
+          This pulls the recent ones from a live search and tells you what changed, who it hits, and
+          what you should do about it.
         </p>
       </div>
 
@@ -52,7 +51,7 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
         <div className="generated">
           <div className="loading-state">
             <span className="spinner" />
-            HENRY is searching Amazon&apos;s latest updates — this usually takes about 30 seconds.
+            HENRY is searching Amazon&apos;s latest updates. Give it about 30 seconds.
           </div>
         </div>
       )}

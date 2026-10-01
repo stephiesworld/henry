@@ -22,19 +22,17 @@ export default function VendorQA({ onAsk }: { onAsk: (q: string) => void }) {
   return (
     <div>
       <div className="page-head">
-        <p className="eyebrow">Knowledge / 02</p>
         <h1>Vendor Q&amp;A</h1>
         <p>
-          The real questions 1P vendors and 3P sellers ask — {TOTAL_QUESTIONS} of them, organized by
-          topic. Tap any question and HENRY answers it for your account, grounded in current Amazon
-          guidance.
+          {TOTAL_QUESTIONS} questions that 1P vendors and 3P sellers ask all the time, sorted by
+          topic. Click one and HENRY answers it using Amazon&apos;s current guidance.
         </p>
       </div>
 
       <input
         type="text"
         className="search-input"
-        placeholder="Search questions — cost increase, chargeback, CRAP status, 1P vs 3P…"
+        placeholder="Search, e.g. cost increase, CRAP status, 1P vs 3P"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />
