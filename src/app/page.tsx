@@ -62,8 +62,9 @@ export default function Landing() {
           <p className="l-kicker">For Amazon 1P vendors (and 3P sellers too)</p>
           <h1>What is Amazon actually paying you per unit?</h1>
           <p className="l-hero-sub">
-            Vendor Central shows you revenue. It doesn&apos;t show you what&apos;s left after co-op,
-            freight, chargebacks and returns take their cut. HENRY does, and then helps you fix it.
+            Enter your wholesale price and costs for each ASIN and HENRY takes out co-op, freight,
+            chargebacks, returns and ad spend, so you can see what every product really makes and
+            which ones are worth fighting for.
           </p>
           <div className="l-hero-cta">
             <Link href="/app" className="l-btn">
@@ -164,7 +165,7 @@ export default function Landing() {
         <Link href="/app" className="l-btn">
           Open HENRY
         </Link>
-        <p className="l-cta-steps">No integration to set up. Nothing to install. Your data stays in your browser.</p>
+        <p className="l-cta-steps">There&apos;s nothing to install, and your data stays in your browser.</p>
       </section>
 
       <footer className="l-footer">
