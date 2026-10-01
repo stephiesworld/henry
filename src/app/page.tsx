@@ -63,8 +63,7 @@ export default function Landing() {
           <h1>What is Amazon actually paying you per unit?</h1>
           <p className="l-hero-sub">
             Enter your wholesale price and costs for each ASIN and HENRY takes out co-op, freight,
-            chargebacks, returns and ad spend, so you can see what every product really makes and
-            which ones are worth fighting for.
+            chargebacks, returns and ad spend to show you the profit on each unit.
           </p>
           <div className="l-hero-cta">
             <Link href="/app" className="l-btn">
