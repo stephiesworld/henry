@@ -62,8 +62,9 @@ export default function Landing() {
           <p className="l-kicker">For Amazon 1P vendors (and 3P sellers too)</p>
           <h1>What is Amazon actually paying you per unit?</h1>
           <p className="l-hero-sub">
-            Enter your wholesale price and costs for each ASIN and HENRY takes out co-op, freight,
-            chargebacks, returns and ad spend to show you the profit on each unit.
+            If you&apos;ve ever wondered why strong sales didn&apos;t turn into much profit, this is
+            where to look. Add your numbers and HENRY breaks down what each ASIN earns after every
+            Amazon deduction.
           </p>
           <div className="l-hero-cta">
             <Link href="/app" className="l-btn">
