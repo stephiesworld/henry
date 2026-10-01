@@ -15,7 +15,7 @@ export const ROOT_CAUSES: Record<RootCause, RootCauseInfo> = {
     key: "ASN_MISMATCH",
     label: "ASN mismatch",
     disputable: true,
-    fix: "Review your ASN submission timing — submit before carrier handoff, not after — and sync the ASN with what the 3PL actually ships.",
+    fix: "Submit the ASN before the carrier picks up, not after, and make sure it matches what the 3PL actually ships.",
     evidence: ["Submitted ASN record", "Packing list", "Carrier tracking / BOL", "Barcode scan from shipment"],
     playbook: "chargeback-disputes",
   },
@@ -39,7 +39,7 @@ export const ROOT_CAUSES: Record<RootCause, RootCauseInfo> = {
     key: "SHORTAGE",
     label: "Shortage claim",
     disputable: true,
-    fix: "Document every shipment with photos and weights; dispute with proof — shortages are often carrier/FC loss, not a shipping error.",
+    fix: "Document every shipment with photos and weights; dispute with proof. A lot of shortages turn out to be carrier or FC losses.",
     evidence: ["Packing list (signed/timestamped)", "Photo of carton (contents + weight)", "Carrier tracking showing weight at pickup", "ASN matching qty/weight"],
     playbook: "chargeback-disputes",
   },
@@ -47,7 +47,7 @@ export const ROOT_CAUSES: Record<RootCause, RootCauseInfo> = {
     key: "OTHER",
     label: "Other / unclassified",
     disputable: false,
-    fix: "Manual review needed — read Amazon's stated reason and escalate to your vendor manager if it looks incorrect.",
+    fix: "Needs a manual look. Read Amazon's stated reason and escalate to your vendor manager if it looks incorrect.",
     evidence: ["Amazon's stated reason", "Any supporting records you have"],
     playbook: "chargeback-disputes",
   },
@@ -185,7 +185,7 @@ export function analyze(rows: Chargeback[]): Analysis {
   const asinCount = new Map<string, number>();
   for (const r of rows) if (r.asin) asinCount.set(r.asin, (asinCount.get(r.asin) ?? 0) + 1);
   for (const [asin, n] of asinCount) {
-    if (n >= 3) redFlags.push({ text: `${asin} appears ${n}× — likely an ASIN-specific spec or process issue. Investigate this SKU.` });
+    if (n >= 3) redFlags.push({ text: `${asin} shows up ${n} times. That usually means something about this SKU's spec or prep is off, so start here.` });
   }
 
   // Weekday concentration
@@ -207,7 +207,7 @@ export function analyze(rows: Chargeback[]): Analysis {
 
   // Dominant cause
   if (byCause[0] && byCause[0].pct >= 35 && rows.length >= 4) {
-    redFlags.push({ text: `${ROOT_CAUSES[byCause[0].cause].label} is ${Math.round(byCause[0].pct)}% of your chargeback dollars — the highest-leverage fix.` });
+    redFlags.push({ text: `${ROOT_CAUSES[byCause[0].cause].label} is ${Math.round(byCause[0].pct)}% of your chargeback dollars. Fixing this one first saves the most.` });
   }
 
   const disputable = rows.filter((r) => ROOT_CAUSES[r.cause].disputable && r.status !== "resolved");

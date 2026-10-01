@@ -64,7 +64,7 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
     }
     if (missing.length) {
       setWarning(
-        `Heads up — couldn't confidently find ${missing.join(" and ")} column(s); results may be incomplete.`
+        `Couldn't find ${missing.join(" and ")} column(s); results may be incomplete.`
       );
     }
     persist(mapped);
@@ -111,9 +111,8 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
   return (
     <div>
       <div className="page-head">
-        <p className="eyebrow">Workspace / 03</p>
         <div className="head-row">
-          <h1>Chargeback forensics</h1>
+          <h1>Chargebacks</h1>
           {onConnect && (
             <button className="connect-btn" onClick={onConnect}>
               Connect Vendor Central
@@ -122,9 +121,9 @@ export default function Chargebacks({ onAsk, onConnect }: { onAsk: (q: string) =
           )}
         </div>
         <p>
-          Upload your Vendor Central chargeback export. HENRY classifies every deduction by root
-          cause, flags patterns, shows what&apos;s disputable, and drafts the dispute — so you can stop
-          the 3%+ that leaks out invisibly.
+          Upload the chargeback export from Vendor Central. Each deduction gets sorted by what caused
+          it, repeat offenders get flagged, and anything worth disputing gets a draft letter. For a lot
+          of vendors this adds up to 3% of revenue or more.
         </p>
       </div>
 

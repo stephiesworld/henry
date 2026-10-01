@@ -48,7 +48,7 @@ const FIELDS: Record<GenTask, Field[]> = {
     { name: "keywords", label: "Target keywords (optional)", type: "text", placeholder: "water bottle, thermos, gym" },
   ],
   "cost-increase": [
-    { name: "product", label: "Product / ASIN", type: "text", placeholder: "B08N5WRWNW — Coconut oil 16oz" },
+    { name: "product", label: "Product / ASIN", type: "text", placeholder: "B08N5WRWNW, coconut oil 16oz" },
     { name: "current", label: "Current wholesale cost", type: "text", placeholder: "$8.40" },
     { name: "requested", label: "Requested new cost (or %)", type: "text", placeholder: "$9.20 (+9.5%)" },
     {
@@ -91,16 +91,16 @@ const META: Record<GenTask, { title: string; lead: string; cta: string }> = {
   },
   decision: {
     title: "1P vs 3P decision analyzer",
-    lead: "Describe the product and your numbers. HENRY weighs price control, economics, and effort, then recommends 1P, 3P, or hybrid — with the trade-offs.",
+    lead: "Describe the product and your numbers. HENRY weighs price control, economics, and effort, then recommends 1P, 3P or hybrid and explains the trade-offs.",
     cta: "Analyze my options",
   },
 };
 
-const TILES: { task: GenTask; num: string; audience: string; title: string; body: string }[] = [
-  { task: "cost-increase", num: "01", audience: "1P", title: "Cost-increase request writer", body: "Draft a wholesale cost-increase justification built to survive Amazon's auto-rejection." },
-  { task: "decision", num: "02", audience: "1P + 3P", title: "1P vs 3P decision analyzer", body: "Get a recommendation on whether a product belongs on Vendor Central, Seller Central, or both." },
-  { task: "chargeback", num: "03", audience: "1P", title: "Chargeback dispute writer", body: "Enter the chargeback details and HENRY drafts a ready-to-submit dispute + evidence checklist." },
-  { task: "optimize", num: "04", audience: "1P + 3P", title: "Listing optimizer", body: "Generate an optimized title, bullets, A+ angles, and backend keywords from your product." },
+const TILES: { task: GenTask; audience: string; title: string; body: string }[] = [
+  { task: "cost-increase", audience: "1P", title: "Cost-increase request writer", body: "Draft a wholesale cost-increase justification built to survive Amazon's auto-rejection." },
+  { task: "decision", audience: "1P + 3P", title: "1P vs 3P decision analyzer", body: "Get a recommendation on whether a product belongs on Vendor Central, Seller Central, or both." },
+  { task: "chargeback", audience: "1P", title: "Chargeback dispute writer", body: "Enter the chargeback details and HENRY drafts a ready-to-submit dispute + evidence checklist." },
+  { task: "optimize", audience: "1P + 3P", title: "Listing optimizer", body: "Generate an optimized title, bullets, A+ angles, and backend keywords from your product." },
 ];
 
 function GenTool({ task }: { task: GenTask }) {
@@ -120,7 +120,7 @@ function GenTool({ task }: { task: GenTask }) {
     try {
       await streamPost("/api/generate", { task, input: values }, setOut);
     } catch (e) {
-      setOut(`Sorry — something went wrong: ${(e as Error).message}`);
+      setOut(`Something went wrong: ${(e as Error).message}`);
     } finally {
       setLoading(false);
     }
@@ -184,18 +184,16 @@ export default function Generators({ onAsk }: { onAsk: (q: string) => void }) {
     return (
       <div>
         <div className="page-head">
-          <p className="eyebrow">Drafting / 01</p>
           <h1>Generators</h1>
           <p>
-            Put HENRY to work on the writing-heavy vendor tasks — cost-increase requests, 1P-vs-3P
-            decisions, chargeback disputes, and listing optimization.
+            First drafts for the writing nobody wants to do: cost-increase requests, chargeback
+            disputes, listing copy, and a straight answer on 1P vs 3P.
           </p>
         </div>
         <div className="card-grid two">
           {TILES.map((t) => (
             <div key={t.task} className="feature-tile" onClick={() => setView(t.task)}>
               <div className="tile-top">
-                <span className="tile-num">{t.num}</span>
                 <span className="pill">{t.audience}</span>
               </div>
               <h3>{t.title}</h3>

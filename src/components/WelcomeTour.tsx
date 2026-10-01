@@ -14,8 +14,8 @@ type Tab = "tools" | "profit" | "chargebacks" | "brief" | "qa" | "playbooks" | "
 const PICKS: { tab: Tab; Icon: typeof IconReportMoney; title: string; desc: string }[] = [
   { tab: "profit", Icon: IconReportMoney, title: "See what you really earn per ASIN", desc: "Net PPM after every Amazon deduction, with a margin waterfall and a what-if simulator. Load the sample to explore." },
   { tab: "chargebacks", Icon: IconReceiptTax, title: "Find your chargeback leaks", desc: "Drop in a Vendor Central export (or the sample) and HENRY classifies every deduction and drafts the disputes." },
-  { tab: "qa", Icon: IconHelpCircle, title: "Browse the vendor questions", desc: "120+ real 1P/3P questions by topic — tap any one and HENRY answers it for your account." },
-  { tab: "ask", Icon: IconMessage2, title: "Ask an Amazonian anything", desc: "Cost increases, CRAP status, label rules, 1P-vs-3P — answered in plain English, checked against current guidance." },
+  { tab: "qa", Icon: IconHelpCircle, title: "Browse the vendor questions", desc: "Over 100 common 1P and 3P questions, sorted by topic. Click one to get an answer." },
+  { tab: "ask", Icon: IconMessage2, title: "Ask an Amazonian anything", desc: "Cost increases, CRAP status, label rules, 1P vs 3P. Plain answers, checked against current guidance." },
 ];
 
 export default function WelcomeTour({ onPick, onClose }: { onPick: (tab: Tab) => void; onClose: () => void }) {
@@ -26,8 +26,8 @@ export default function WelcomeTour({ onPick, onClose }: { onPick: (tab: Tab) =>
         <div className="modal-head">
           <h2>Welcome to HENRY</h2>
           <p>
-            Your Vendor Central co-pilot. It runs on built-in demo data, so you can click straight in —
-            no setup. Here&apos;s where to start:
+            Everything runs on sample data, so there&apos;s nothing to set up. Pick a place to
+            start:
           </p>
         </div>
         <div className="welcome-grid">

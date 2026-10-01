@@ -227,7 +227,7 @@ function demoAnalyze(asin: string): AsinAnalysis {
     hasFeaturedOffer,
     variance30Pct,
     highVariance: variance30Pct > VARIANCE_THRESHOLD,
-    note: "Demo data — add KEEPA_API_KEY for live pricing.",
+    note: "Demo data. Add KEEPA_API_KEY for live pricing.",
   };
 }
 
