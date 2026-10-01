@@ -125,25 +125,25 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
           <div className="pb-detail">
             {open.whyItMatters && (
               <section className="pb-why">
-                <p className="pb-label">Why it matters to you</p>
+                <p className="pb-label">Why it&rsquo;s worth doing</p>
                 <Md text={open.whyItMatters} openById={openById} />
               </section>
             )}
             {open.problem && (
               <section className="pb-section">
-                <p className="pb-label">What&rsquo;s the problem</p>
+                <p className="pb-label">What usually goes wrong</p>
                 <Md text={open.problem} openById={openById} />
               </section>
             )}
             {open.whatYouNeed && (
               <section className="pb-section">
-                <p className="pb-label">What you&rsquo;ll need</p>
+                <p className="pb-label">Before you start</p>
                 <Md text={open.whatYouNeed} openById={openById} />
               </section>
             )}
             {open.resolve && (
               <section className="pb-section">
-                <p className="pb-label">How to resolve</p>
+                <p className="pb-label">Steps</p>
                 <Md text={open.resolve} openById={openById} />
               </section>
             )}
