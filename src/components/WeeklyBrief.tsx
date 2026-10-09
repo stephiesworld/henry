@@ -35,11 +35,11 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
   return (
     <div>
       <div className="page-head">
-        <h1>Weekly brief</h1>
+        <h1>HENRY&apos;s weekly brief</h1>
         <p>
-          Amazon posts changes to Seller and Vendor Central every week and most of them go unread.
-          This pulls the recent ones from a live search and tells you what changed, who it hits, and
-          what you should do about it.
+          This week&apos;s Seller and Vendor Central updates, summarized: what changed, who it affects,
+          and what to do about it. Check in each week so an Amazon announcement doesn&apos;t catch you
+          off guard.
         </p>
       </div>
 
@@ -51,7 +51,7 @@ export default function WeeklyBrief({ onBrowsePlaybooks }: { onBrowsePlaybooks?:
         <div className="generated">
           <div className="loading-state">
             <span className="spinner" />
-            HENRY is searching Amazon&apos;s latest updates. Give it about 30 seconds.
+            HENRY is searching Amazon&apos;s latest updates. This usually takes about 30 seconds.
           </div>
         </div>
       )}

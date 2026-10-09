@@ -110,7 +110,7 @@ export default function AskHenry({ seed }: { seed?: { text: string; nonce: numbe
         const next = [...prev];
         next[next.length - 1] = {
           role: "assistant",
-          text: `Something went wrong: ${(e as Error).message}`,
+          text: `Sorry, something went wrong: ${(e as Error).message}`,
         };
         return next;
       });
@@ -131,9 +131,10 @@ export default function AskHenry({ seed }: { seed?: { text: string; nonce: numbe
       <div className="page-head">
         <h1>Ask an Amazonian</h1>
         <p>
-          Ask about label rules, SNS, Climate Pledge, Vine, category approvals, chargebacks, event
-          dates or anything else. HENRY checks Amazon&apos;s latest published guidance before
-          answering. You can also upload a photo of a label to see what&apos;s missing.
+          Ask about label rules, program enrollment (SNS, Climate Pledge, Vine), category approvals,
+          chargeback disputes, event dates, or anything else. HENRY checks Amazon&apos;s latest
+          published guidance before answering. Upload a label photo and he&apos;ll tell you what&apos;s
+          missing.
         </p>
       </div>
 

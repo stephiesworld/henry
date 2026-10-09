@@ -175,16 +175,16 @@ export default function Playbooks({ onAsk }: { onAsk: (q: string) => void }) {
       <div className="page-head">
         <h1>Playbooks</h1>
         <p>
-          How-tos for the stuff Amazon documents somewhere but nobody can find: labels, programs,
-          disputes, approvals. Open one to read it, or send it to the chat to walk through it for your
-          account.
+          Short how-to guides for 1P vendors and 3P sellers, based on what Amazon publishes but most
+          people don&apos;t have time to read. Open one, or send it to the chat to talk through your
+          situation.
         </p>
       </div>
 
       <input
         type="text"
         className="search-input"
-        placeholder="Search, e.g. labels, SNS, ungating"
+        placeholder="Search playbooks: labels, SNS, climate pledge, ungating…"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
       />

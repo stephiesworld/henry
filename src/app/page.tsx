@@ -1,189 +1,268 @@
 import Link from "next/link";
-import BoxMark from "@/components/BoxMark";
 import { QUESTION_CATEGORIES, TOTAL_QUESTIONS } from "@/lib/questions";
 
-// A handful of real questions from the catalog, shown as an "unanswered inbox".
-const INBOX = [
-  { cat: "cost-increases", q: 1, waiting: "9 days" },
-  { cat: "chargebacks", q: 0, waiting: "6 days" },
-  { cat: "inventory-po", q: 0, waiting: "2 weeks" },
-  { cat: "profitability", q: 1, waiting: "4 days" },
-  { cat: "negotiation", q: 0, waiting: "11 days" },
-].flatMap(({ cat, q, waiting }) => {
-  const group = QUESTION_CATEGORIES.find((c) => c.id === cat);
-  const subject = group?.questions[q];
-  return group && subject ? [{ topic: group.label, subject, waiting }] : [];
-});
+// The "Answers" section shows six real question groups, drawn from the live
+// question catalog, in the order the design lays them out.
+const ANSWER_GROUP_IDS = [
+  "cost-increases",
+  "profitability",
+  "chargebacks",
+  "inventory-po",
+  "negotiation",
+  "model-strategy",
+];
+const ANSWER_GROUPS = ANSWER_GROUP_IDS.map((id) =>
+  QUESTION_CATEGORIES.find((c) => c.id === id)
+).filter((c): c is (typeof QUESTION_CATEGORIES)[number] => Boolean(c));
 
-// Packing-slip version of the Profitability tab's margin waterfall, using the
-// built-in sample portfolio (not real customer data).
-const SLIP = [
-  { label: "Wholesale price", value: "24.00", amt: 24, kind: "base" },
-  { label: "COGS", value: "-9.50", amt: 9.5, kind: "cost" },
-  { label: "Co-op & allowances", value: "-3.60", amt: 3.6, kind: "cost" },
-  { label: "Freight in", value: "-1.80", amt: 1.8, kind: "cost" },
-  { label: "Chargebacks", value: "-1.20", amt: 1.2, kind: "cost" },
-  { label: "Returns & damages", value: "-0.90", amt: 0.9, kind: "cost" },
-  { label: "Ads", value: "-2.40", amt: 2.4, kind: "cost" },
+// Static render of the Profitability tab's margin waterfall, using the built-in
+// sample portfolio (clearly tagged), not real customer data.
+const INK = "rgba(241,238,230,0.85)";
+const DIM = "rgba(241,238,230,0.55)";
+const MONO = "rgba(241,238,230,0.7)";
+const RED = "#C4643F";
+const GREEN = "#8FBFA4";
+const WF_MAX = 24;
+const WATERFALL = [
+  { label: "Wholesale price", value: "$24.00", amt: 24.0, kind: "base" },
+  { label: "COGS", value: "−$9.50", amt: 9.5, kind: "cost" },
+  { label: "Co-op / allowances", value: "−$3.60", amt: 3.6, kind: "cost" },
+  { label: "Freight / inbound", value: "−$1.80", amt: 1.8, kind: "cost" },
+  { label: "Chargebacks", value: "−$1.20", amt: 1.2, kind: "cost" },
+  { label: "Returns / damages", value: "−$0.90", amt: 0.9, kind: "cost" },
+  { label: "Advertising", value: "−$2.40", amt: 2.4, kind: "cost" },
+  { label: "Net PPM", value: "$4.60", amt: 4.6, kind: "net" },
+].map((r, i) => ({
+  ...r,
+  labelColor: r.kind === "cost" ? DIM : INK,
+  valColor: r.kind === "net" ? GREEN : r.kind === "cost" ? "rgba(196,100,63,0.9)" : MONO,
+  barColor: r.kind === "net" ? GREEN : r.kind === "cost" ? RED : "rgba(241,238,230,0.8)",
+  width: `${Math.max(2, (r.amt / WF_MAX) * 100).toFixed(1)}%`,
+  delay: `${(0.3 + i * 0.08).toFixed(2)}s`,
+}));
+
+const WORKSPACE_ROWS = [
+  {
+    marker: "A",
+    title: "ASIN toolkit",
+    body: "Paste your catalog. See who holds the buy box, which ASINs have no featured offer, 30/60-day price lows, and anything swinging past ±5%. Export to CSV.",
+  },
+  {
+    marker: "B",
+    title: "Weekly brief & playbooks",
+    body: "A weekly rundown of what Amazon changed and whether it affects you, plus how-to guides for FNSKU labels, Subscribe & Save, Climate Pledge, ungating, and chargeback disputes.",
+  },
+  {
+    marker: "C",
+    title: "Ask an Amazonian",
+    body: "A chat assistant that knows the playbooks and searches Amazon's current guidance before it answers. Send a photo of a label and HENRY will tell you what's missing.",
+  },
 ];
 
-const MANIFEST = [
-  { name: "ASIN toolkit", what: "Buy-box owner, missing featured offers, 30 and 60-day price lows, anything moving more than 5%" },
-  { name: "Profitability", what: "Net PPM per ASIN after co-op, freight, chargebacks, returns and ads, with a what-if slider" },
-  { name: "Chargebacks", what: "Drop in the Vendor Central export and get every deduction sorted by cause, plus a dispute letter" },
-  { name: "Weekly brief", what: "What Amazon changed this week, pulled from live search with the sources linked" },
-  { name: "Vendor Q&A", what: `${TOTAL_QUESTIONS} questions vendors actually ask, each one a click away from an answer` },
-  { name: "Playbooks", what: "Step-by-step guides for FNSKU labels, Subscribe & Save, ungating, AVN prep and more" },
-  { name: "Generators", what: "Cost-increase requests, 1P vs 3P analysis, dispute letters and listing rewrites" },
-  { name: "Chat", what: "Ask anything. Send a photo of a carton label and it'll tell you what's missing" },
+const HOW = [
+  { roman: "1", title: "Catch up on what changed", body: "Open the Weekly Brief to see what Amazon updated this week and whether any of it touches your business." },
+  { roman: "2", title: "Check your numbers", body: "Look for lost buy boxes, suppressed offers, big price swings, and SKUs that have stopped making money." },
+  { roman: "3", title: "Get it handled", body: "Ask HENRY whatever came up, or have it draft the dispute, cost-increase request, or listing fix you need to send." },
 ];
 
 export default function Landing() {
   return (
     <div className="landing" id="top">
+      {/* NAV */}
       <header className="l-nav">
         <nav className="l-nav-inner">
           <a href="#top" className="l-brand">
-            <BoxMark />
             <span className="l-word">HENRY</span>
+            <span className="l-brand-tag">for Amazon 1P vendors</span>
           </a>
           <div className="l-nav-links">
-            <a href="#tools">What&apos;s inside</a>
-            <a href="#questions">Questions</a>
+            <a href="#margin">Profitability</a>
+            <a href="#answers">Answers</a>
+            <a href="#how">How it works</a>
             <Link href="/app" className="l-launch">
-              Open HENRY
+              Launch HENRY
             </Link>
           </div>
         </nav>
       </header>
 
+      {/* HERO */}
       <section className="l-hero">
-        <div className="l-hero-copy l-rise">
-          <p className="l-kicker">For Amazon 1P vendors (and 3P sellers too)</p>
-          <h1>What is Amazon actually paying you per unit?</h1>
-          <p className="l-hero-sub">
-            If you&apos;ve ever wondered why strong sales didn&apos;t turn into much profit, this is
-            where to look. Add your numbers and HENRY breaks down what each ASIN earns after every
-            Amazon deduction.
-          </p>
-          <div className="l-hero-cta">
-            <Link href="/app" className="l-btn">
-              Try it with sample data
-            </Link>
-            <span className="l-hero-note">Free while in beta. No login, no API key.</span>
-          </div>
-        </div>
-
-        <div className="l-slip-wrap l-rise-delay">
-          <div className="l-slip">
-            <div className="l-slip-tape" />
-            <div className="l-slip-head">
-              <span>PACKING SLIP</span>
-              <span>SKU 32OZ-BTL-BLK</span>
-            </div>
-            <p className="l-slip-item">32oz insulated bottle, per unit</p>
-            <div className="l-slip-rows">
-              {SLIP.map((r, i) => (
-                <div key={r.label} className={`l-slip-row ${r.kind}`}>
-                  <span>{r.label}</span>
-                  <span
-                    className="l-slip-bar"
-                    style={{
-                      width: `${Math.max(3, (r.amt / 24) * 100).toFixed(1)}%`,
-                      animationDelay: `${(0.35 + i * 0.07).toFixed(2)}s`,
-                    }}
-                  />
-                  <span className="l-slip-val">{r.value}</span>
-                </div>
-              ))}
-            </div>
-            <div className="l-slip-total">
-              <span>You keep</span>
-              <span>$4.60</span>
-            </div>
-            <p className="l-slip-stamp">19% net PPM</p>
-            <div className="l-slip-barcode" aria-hidden="true" />
-          </div>
-        </div>
-      </section>
-
-      <section className="l-sample">
-        <p>
-          In the sample catalog, <b>$184,600</b> a month in sales turns into <b>$35,400</b> after
-          every deduction, and <b className="neg">3 SKUs</b> lose money on each unit Amazon orders.
-          Most vendors don&apos;t find that out until the annual negotiation.
-        </p>
-      </section>
-
-      <section id="tools" className="l-section">
-        <div className="l-section-head">
-          <h2>What&apos;s in the box</h2>
-          <p>Eight tools, all in one tab. Load the sample data and poke around.</p>
-        </div>
-        <ol className="l-manifest">
-          {MANIFEST.map((m, i) => (
-            <li key={m.name}>
-              <span className="l-manifest-qty">{i + 1}</span>
-              <span className="l-manifest-name">{m.name}</span>
-              <span className="l-manifest-what">{m.what}</span>
-            </li>
-          ))}
-        </ol>
-      </section>
-
-      <section id="questions" className="l-questions">
-        <div className="l-section l-q-grid">
-          <div className="l-section-head">
-            <h2>Still waiting to hear back from your vendor manager?</h2>
-            <p>
-              These come straight from what vendors email Amazon and then wait days on. HENRY
-              answers {TOTAL_QUESTIONS} of them right away, using Amazon&apos;s own published
-              guidance and a live search to check it&apos;s current.
+        <div className="l-hero-inner">
+          <div className="l-rise">
+            <h1>
+              The first place to go for <em>anything 1P.</em>
+            </h1>
+            <p className="l-hero-sub">
+              Margins, chargebacks, cost increases, buy box, program rules, and whatever Amazon changed
+              this week. When something comes up on Vendor Central, open HENRY first. Your numbers, the
+              playbooks, and an assistant that answers in plain English are all in one spot.
             </p>
-            <Link href="/app" className="l-btn dark">
-              Ask HENRY instead
-            </Link>
-          </div>
-          <div className="l-inbox" role="list">
-            <div className="l-inbox-bar">
-              <span>Sent</span>
-              <span>{INBOX.length} awaiting reply</span>
+            <div className="l-hero-cta">
+              <Link href="/app" className="l-btn-cream">
+                Open HENRY
+              </Link>
+              <Link href="/app" className="l-link-underline">
+                Browse the playbooks
+              </Link>
             </div>
-            {INBOX.map((m) => (
-              <div key={m.subject} className="l-inbox-row" role="listitem">
-                <span className="l-inbox-to">To: Vendor Manager</span>
-                <span className="l-inbox-subj">{m.subject}</span>
-                <span className="l-inbox-wait">{m.waiting}, no reply</span>
+            <p className="l-hero-note">Free during beta. No login or API key needed.</p>
+          </div>
+
+          {/* Margin-waterfall card */}
+          <div className="l-rise-delay">
+            <div className="l-card">
+              <div className="l-card-head">
+                <p className="mono-lbl">Margin waterfall</p>
+                <p className="mono-sub">32oz Insulated Bottle</p>
+              </div>
+              <div className="l-wf">
+                {WATERFALL.map((r) => (
+                  <div key={r.label} style={{ display: "contents" }}>
+                    <span className="l-wf-label" style={{ color: r.labelColor }}>
+                      {r.label}
+                    </span>
+                    <span
+                      className="l-wf-bar"
+                      style={{
+                        background: r.barColor,
+                        width: r.width,
+                        animation: `barGrow 0.8s cubic-bezier(0.2,0.7,0.2,1) ${r.delay} both`,
+                      }}
+                    />
+                    <span className="l-wf-val" style={{ color: r.valColor }}>
+                      {r.value}
+                    </span>
+                  </div>
+                ))}
+              </div>
+              <div className="l-card-foot">
+                <span className="lbl">Net PPM per unit</span>
+                <span className="val">$4.60</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* STAT BAND */}
+      <section className="l-statband">
+        <div className="l-statband-inner">
+          <div className="l-stat">
+            <p className="num">$184,600</p>
+            <p className="cap">Monthly revenue, sample portfolio</p>
+          </div>
+          <div className="l-stat">
+            <p className="num">$35,400</p>
+            <p className="cap">Net contribution after every deduction</p>
+          </div>
+          <div className="l-stat">
+            <p className="num">19.2%</p>
+            <p className="cap">Blended margin, net PPM basis</p>
+          </div>
+          <div className="l-stat">
+            <p className="num neg">3</p>
+            <p className="cap">SKUs quietly losing money</p>
+          </div>
+        </div>
+      </section>
+
+      {/* SECTION 01: ONE WORKSPACE */}
+      <section id="margin" className="l-section">
+        <div className="l-grid-2">
+          <div>
+            <h2 className="l-h2">
+              Your catalog, your margins, and your questions in one tab.
+            </h2>
+            <p className="l-body">
+              Right now the job means pulling Vendor Central reports, digging through help pages, and
+              emailing your vendor manager and waiting days. HENRY keeps it together: pricing and buy-box
+              data, net PPM for each ASIN, a playbook for each program, and answers when you need them.
+            </p>
+          </div>
+          <div className="l-rows">
+            {WORKSPACE_ROWS.map((r) => (
+              <div key={r.marker} className="l-row">
+                <div>
+                  <h3>{r.title}</h3>
+                  <p>{r.body}</p>
+                </div>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="l-cta">
-        <h2>Got a catalog? Paste some ASINs and see what turns up</h2>
-        <Link href="/app" className="l-btn">
-          Open HENRY
-        </Link>
-        <p className="l-cta-steps">There&apos;s nothing to install, and your data stays in your browser.</p>
+      {/* SECTION 02: ANSWERS */}
+      <section id="answers" className="l-answers">
+        <div className="l-section tight">
+          <div className="l-answers-head">
+            <h2 className="l-h2">The questions you'd normally email your vendor manager.</h2>
+            <p className="l-body">
+              Vendors send questions like these and often wait days for a reply. HENRY answers all{" "}
+              {TOTAL_QUESTIONS} of them right away, based on Amazon&apos;s published guidance.
+            </p>
+          </div>
+          <div className="l-qgroups">
+            {ANSWER_GROUPS.map((group) => (
+              <div key={group.id} className="l-qgroup">
+                <h3>{group.label}</h3>
+                <div className="qs">
+                  {group.questions.slice(0, 3).map((q) => (
+                    <p key={q}>{q}</p>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{ marginTop: 64 }}>
+            <Link href="/app" className="l-btn-ink">
+              Ask HENRY
+            </Link>
+          </div>
+        </div>
       </section>
 
-      <footer className="l-footer">
-        <div className="l-footer-inner">
-          <div className="l-footer-brand">
-            <BoxMark size={18} />
-            <span>
-              HENRY, your local fulfillment center
-              <small>Helpful Expert, Navigating Retail Yield</small>
-            </span>
-          </div>
-          <p className="l-footer-disclaimer">
-            An independent project built from Amazon&apos;s public seller and vendor documentation,
-            using Claude with web search. Not affiliated with or endorsed by Amazon, and no
-            confidential data is used.
-          </p>
+      {/* SECTION 03: HOW IT WORKS */}
+      <section id="how" className="l-section tight">
+        <h2 className="l-h2">What a week with HENRY looks like</h2>
+        <div className="l-how">
+          {HOW.map((h) => (
+            <div key={h.roman} className="l-how-item">
+              <p className="l-roman">{h.roman}</p>
+              <h3>{h.title}</h3>
+              <p>{h.body}</p>
+            </div>
+          ))}
         </div>
-      </footer>
+      </section>
+
+      {/* CLOSING CTA + FOOTER */}
+      <section className="l-cta-band">
+        <div className="l-cta-inner">
+          <h2>
+            Vendor Central question? <em>Start here.</em>
+          </h2>
+          <Link href="/app" className="l-btn-cream">
+            Launch HENRY
+          </Link>
+        </div>
+        <footer className="l-footer">
+          <div className="l-footer-inner">
+            <div>
+              <p className="l-footer-word">HENRY</p>
+              <p className="l-footer-backronym">
+                <b>H</b>elpful <b>E</b>xpert, <b>N</b>avigating <b>R</b>etail <b>Y</b>ield
+              </p>
+            </div>
+            <p className="l-footer-disclaimer">
+              An independent prototype built from Amazon&apos;s publicly published seller &amp; vendor
+              documentation, using Claude with web search. Not affiliated with or endorsed by Amazon.
+              No confidential or internal data.
+            </p>
+          </div>
+        </footer>
+      </section>
     </div>
   );
 }

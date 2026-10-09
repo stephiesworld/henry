@@ -10,31 +10,20 @@ import Generators from "@/components/Generators";
 import VendorQA from "@/components/VendorQA";
 import Chargebacks from "@/components/Chargebacks";
 import Profitability from "@/components/Profitability";
-import BoxMark from "@/components/BoxMark";
 import WelcomeTour from "@/components/WelcomeTour";
 import ComingSoonModal, { type PreviewKind } from "@/components/ComingSoonModal";
 
 type Tab = "tools" | "profit" | "chargebacks" | "brief" | "qa" | "playbooks" | "generators" | "ask";
 
-const NAV_GROUPS: { label: string; items: { id: Tab; label: string }[] }[] = [
-  {
-    label: "Workspace",
-    items: [
-      { id: "tools", label: "ASIN toolkit" },
-      { id: "profit", label: "Profitability" },
-      { id: "chargebacks", label: "Chargebacks" },
-    ],
-  },
-  {
-    label: "Knowledge",
-    items: [
-      { id: "brief", label: "Weekly brief" },
-      { id: "qa", label: "Vendor Q&A" },
-      { id: "playbooks", label: "Playbooks" },
-    ],
-  },
-  { label: "Drafting", items: [{ id: "generators", label: "Generators" }] },
-  { label: "Chat", items: [{ id: "ask", label: "Ask an Amazonian" }] },
+const NAV: { id: Tab; label: string }[] = [
+  { id: "tools", label: "ASIN toolkit" },
+  { id: "profit", label: "Profitability" },
+  { id: "chargebacks", label: "Chargebacks" },
+  { id: "brief", label: "Weekly brief" },
+  { id: "qa", label: "Vendor Q&A" },
+  { id: "playbooks", label: "Playbooks" },
+  { id: "generators", label: "Generators" },
+  { id: "ask", label: "Ask an Amazonian" },
 ];
 
 export default function AppPage() {
@@ -66,7 +55,7 @@ export default function AppPage() {
     dismissWelcome();
   }
 
-  // The sidebar status chip reflects whether a Keepa key is connected (BYOK, in
+  // The header status chip reflects whether a Keepa key is connected (BYOK, in
   // this browser). Set after mount to avoid a hydration mismatch.
   useEffect(() => {
     const sync = () => {
@@ -88,49 +77,36 @@ export default function AppPage() {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <Link href="/" className="side-brand" aria-label="HENRY home">
-          <BoxMark size={24} />
-          <span className="side-brand-text">
-            <span className="h">HENRY</span>
-            <span className="side-tag">your local fulfillment center</span>
-          </span>
-        </Link>
-
-        <nav className="side-nav">
-          {NAV_GROUPS.map((group) => (
-            <div key={group.label} className="nav-group">
-              <p className="nav-group-label">{group.label}</p>
-              {group.items.map(({ id, label }) => (
-                <button
-                  key={id}
-                  className={`nav-item ${tab === id ? "active" : ""}`}
-                  onClick={() => setTab(id)}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
+      <header className="topbar">
+        <div className="topbar-inner">
+          <Link href="/" className="top-brand" aria-label="HENRY home">
+            HENRY
+          </Link>
+          <div className="top-actions">
+            <span className={`status-chip ${livePricing ? "live" : "demo"}`}>
+              <span className="dot" />
+              {livePricing ? "Live pricing" : "Demo pricing"}
+            </span>
+            <button className="top-btn" onClick={() => setShowWelcome(true)}>
+              Start here
+            </button>
+            <button className="top-btn" onClick={() => setPreview("accounts")}>
+              Sign in
+            </button>
+          </div>
+        </div>
+        <nav className="top-nav">
+          {NAV.map(({ id, label }) => (
+            <button
+              key={id}
+              className={`top-tab ${tab === id ? "active" : ""}`}
+              onClick={() => setTab(id)}
+            >
+              {label}
+            </button>
           ))}
         </nav>
-
-        <div className="side-foot">
-          <button className="side-signin" onClick={() => setPreview("accounts")}>
-            Sign in / save
-          </button>
-          <button className="start-here" onClick={() => setShowWelcome(true)}>
-            Start here
-          </button>
-          <span className={`status-chip ${livePricing ? "live" : "demo"}`}>
-            <span className="dot" />
-            {livePricing ? "Live pricing" : "Demo pricing"}
-          </span>
-          <p className="side-disclaimer">
-            Independent project, built from Amazon&apos;s public seller docs. Not affiliated with
-            Amazon.
-          </p>
-        </div>
-      </aside>
+      </header>
 
       <main className="content">
         {tab === "tools" && <AsinTools />}
@@ -141,6 +117,9 @@ export default function AppPage() {
         {tab === "playbooks" && <Playbooks onAsk={askHenry} />}
         {tab === "generators" && <Generators onAsk={askHenry} />}
         {tab === "ask" && <AskHenry seed={seed} />}
+        <p className="app-disclaimer">
+          Independent project, built from Amazon&apos;s public seller docs. Not affiliated with Amazon.
+        </p>
       </main>
 
       {showWelcome && <WelcomeTour onPick={welcomePick} onClose={dismissWelcome} />}

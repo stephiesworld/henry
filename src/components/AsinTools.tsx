@@ -155,9 +155,9 @@ export default function AsinTools() {
       <div className="page-head">
         <h1>ASIN toolkit</h1>
         <p>
-          Paste ASINs, one per line or separated by commas. You&apos;ll see who has the buy box, which
-          listings have no featured offer, the 30 and 60-day price lows, and any price that moved more
-          than 5%.
+          Paste your ASINs (one per line, or comma-separated). HENRY pulls who&apos;s winning the buy
+          box, which have no featured offers, the 30 / 60-day price lows, and flags anything with a
+          price swing over &plusmn;5%.
         </p>
       </div>
 
@@ -185,7 +185,7 @@ export default function AsinTools() {
         <div className="spacer" />
         {data && (
           <span className={`pill ${data.source === "keepa" ? "live" : "demo"}`}>
-            {data.source === "keepa" ? (keepaKey ? "Live, your Keepa key" : "Live Keepa data") : "Demo data"}
+            {data.source === "keepa" ? (keepaKey ? "Live (your Keepa key)" : "Live Keepa data") : "Demo data"}
           </span>
         )}
       </div>
@@ -206,7 +206,7 @@ export default function AsinTools() {
         <div className="keepa-connect">
           <p className="muted" style={{ fontSize: 12.5, margin: "0 0 8px" }}>
             Paste your own <strong>Keepa API key</strong> for live pricing on your account&apos;s
-            budget. Stored only in this browser, sent straight to Keepa and never saved on our server.
+            budget. It&apos;s stored only in this browser and sent straight to Keepa, never saved on our server.
             Get one at{" "}
             <a href="https://keepa.com/#!api" target="_blank" rel="noreferrer">keepa.com/#!api</a>.
           </p>

@@ -87,7 +87,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
       });
       const mapped = mapPnlRows(parsed.data);
       if (!mapped.length) {
-        setImportNote("Couldn't read any SKUs. The file needs at least a wholesale price and COGS column.");
+        setImportNote("Couldn't read any SKUs. The file needs at least a wholesale price column and a COGS column.");
         return;
       }
       persist([...rows, ...mapped]);
@@ -122,7 +122,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
     <div>
       <div className="page-head">
         <div className="head-row">
-          <h1>Profitability</h1>
+          <h1>Profitability: net PPM by ASIN</h1>
           {onConnect && (
             <button className="connect-btn" onClick={onConnect}>
               Connect Vendor Central
@@ -131,9 +131,9 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           )}
         </div>
         <p>
-          Net PPM by ASIN: what&apos;s left per unit once co-op, freight, chargebacks, returns and
-          ads are paid. Vendor Central doesn&apos;t show this number anywhere. Type your own numbers
-          in, or load the sample catalog to see how it works.
+          What you <em>actually</em> earn per unit after co-op, freight, chargebacks, returns, and ads.
+          Vendor Central doesn&apos;t show this number directly. Edit the table, or load the sample
+          portfolio to try it out.
         </p>
       </div>
 
@@ -205,9 +205,9 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           {portfolio.foolsGoldCount > 0 && (
             <div className="cb-flag" style={{ marginTop: 14 }}>
               <span className="cb-flag-mark">!</span>
-              {portfolio.foolsGoldCount} &ldquo;Fool&apos;s Gold&rdquo; ASIN{portfolio.foolsGoldCount > 1 ? "s" : ""} selling
-              well but keeping less than 5%. The sales volume makes them look healthy. These are the
-              ones to reprice, re-SKU or move to 3P.
+              {portfolio.foolsGoldCount} &ldquo;Fool&apos;s Gold&rdquo; ASIN{portfolio.foolsGoldCount > 1 ? "s" : ""}: high
+              revenue, but under 5% margin. The sales volume makes them look healthy. These are the
+              ones to re-price, repackage, or move to 3P.
             </div>
           )}
 
@@ -271,7 +271,7 @@ export default function Profitability({ onAsk, onConnect }: { onAsk: (q: string)
           {selected && selBase && selAdj && (
             <div className="pnl-panel">
               <div className="row" style={{ justifyContent: "space-between" }}>
-                <h3 style={{ margin: 0, fontSize: 16 }}>Where the money goes: {selected.title || selected.asin || "SKU"}</h3>
+                <h3 style={{ margin: 0, fontSize: 16 }}>{selected.title || selected.asin || "SKU"} : margin waterfall</h3>
                 <button className="pnl-del" onClick={() => setSelectedId(null)} aria-label="Close"><IconX size={16} stroke={2} /></button>
               </div>
 

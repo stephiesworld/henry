@@ -9,7 +9,7 @@ const CONTENT: Record<PreviewKind, { Icon: typeof IconX; title: string; intro: s
     Icon: IconPlugConnected,
     title: "Connect Vendor Central",
     intro:
-      "In production, HENRY links to your Amazon Vendor Central through the official Selling Partner API (SP-API), so this fills in on its own and you won't need a CSV.",
+      "The full version of HENRY would connect to Vendor Central through Amazon's Selling Partner API (SP-API), so this data would fill in on its own without a CSV.",
     points: [
       "Purchase orders & demand forecasts",
       "Sales, inventory & traffic reports",
@@ -17,19 +17,19 @@ const CONTENT: Record<PreviewKind, { Icon: typeof IconX; title: string; intro: s
       "Chargebacks & deductions (via report sync)",
     ],
     footer:
-      "Requires Amazon's SP-API app approval and your one-time authorization. Until then, upload a CSV or type your numbers in. Everything else works the same.",
+      "This needs Amazon to approve the SP-API app and you to authorize it once. For now, upload a CSV or type in your numbers. The analysis works the same way.",
   },
   accounts: {
     Icon: IconUserCircle,
     title: "Save across devices",
     intro:
-      "Accounts are coming. Today HENRY saves your lists, P&L, and uploads in this browser. With an account, your data follows you to any device and your team can see it too.",
+      "Accounts are on the way. Right now HENRY saves your lists, P&L, and uploads in this browser. With an account, your data would be available on any device and to your team.",
     points: [
       "Secure sign-in (email or Google)",
       "Your catalog, P&L, and chargeback history saved to your account",
       "Connect your Vendor Central and Keepa keys once",
     ],
-    footer: "Until then, everything you enter persists locally in this browser.",
+    footer: "Until then, everything you enter stays saved in this browser.",
   },
 };
 
