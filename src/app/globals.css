@@ -22,12 +22,10 @@
   --teal: #86c6a2;
 
   --radius: 12px;
-  --mono: "Spline Sans Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
-  --sans: "Helvetica Neue", Helvetica, Arial, sans-serif;
-  --serif: "Newsreader", Georgia, serif;
-  /* App titles/headings (screen h1s + card/section headings). Small uppercase
-     mono labels/eyebrows and all numeric/tabular text stay --mono. */
-  --display: "Space Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  /* One family throughout, numbers included. */
+  --sans: "Schibsted Grotesk", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --display: var(--sans);
+  --mono: var(--sans);
 }
 
 * {
@@ -975,7 +973,6 @@ td.title {
   padding: 5px 7px;
   width: 72px;
   text-align: right;
-  font-variant-numeric: tabular-nums;
 }
 .pnl-in.pnl-asin {
   width: 104px;
@@ -1062,7 +1059,6 @@ td.title {
   text-align: right;
   font-family: var(--mono);
   font-size: 12px;
-  font-variant-numeric: tabular-nums;
   color: rgba(241, 238, 230, 0.7);
 }
 .wf-val.wf-neg {
@@ -1094,7 +1090,6 @@ td.title {
   font-family: var(--mono);
   font-size: 12px;
   color: var(--text);
-  font-variant-numeric: tabular-nums;
 }
 .whatif-result {
   display: flex;
@@ -1143,7 +1138,6 @@ td.title {
 .cib-cogs-row > span:not(.cib-comp) {
   text-align: right;
   font-family: var(--mono);
-  font-variant-numeric: tabular-nums;
 }
 .cib-cogs-row {
   border-top: 1px solid var(--hairline);
@@ -1795,7 +1789,7 @@ td.title {
 .l-hero h1 {
   margin: 0 0 26px;
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 58px;
   line-height: 1.04;
   letter-spacing: -0.03em;
@@ -1971,7 +1965,7 @@ td.title {
 .l-h2 {
   margin: 0 0 24px;
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 36px;
   line-height: 1.12;
   letter-spacing: -0.02em;
@@ -2111,7 +2105,7 @@ td.title {
   margin: 0 auto 36px;
   max-width: 760px;
   font-family: var(--display);
-  font-weight: 500;
+  font-weight: 600;
   font-size: 46px;
   line-height: 1.1;
   letter-spacing: -0.025em;
